@@ -3,6 +3,7 @@ package com.chuangda;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Message;
+import android.view.KeyEvent;
 
 import com.chuangda.common.FLog;
 
@@ -38,4 +39,5 @@ public abstract class BaseFragment extends Fragment {
     	MainActivity.mCurBaseFragment = this;
     }
     abstract public void handleUI(Message msg);
+    abstract public boolean dispatchKeyEvent(KeyEvent event);
 }

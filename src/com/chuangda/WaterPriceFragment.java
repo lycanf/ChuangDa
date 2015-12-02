@@ -16,17 +16,17 @@ import android.widget.TextView;
 import com.chuangda.common.FData;
 import com.chuangda.common.FLog;
 
-public class ModifyFlowFragment extends BaseFragment {
+public class WaterPriceFragment extends BaseFragment {
 
-	private TextView mFlowData = null;
-	private Button   mFlowUp = null;
-	private Button   mFlowDown = null;
+	private TextView mWaterPrice = null;
+	private Button   mPriceUp = null;
+	private Button   mPriceDown = null;
 	
-	public ModifyFlowFragment() {
+	public WaterPriceFragment() {
 	}
 	
-    static ModifyFlowFragment newInstance() {
-    	ModifyFlowFragment f = new ModifyFlowFragment();
+    static WaterPriceFragment newInstance() {
+    	WaterPriceFragment f = new WaterPriceFragment();
         return f;
     }
 
@@ -38,11 +38,10 @@ public class ModifyFlowFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-    	View v = inflater.inflate(R.layout.modify_flow, container, false);
-    	mFlowData = (TextView) v.findViewById(R.id.flow_data);
-    	mFlowUp   = (Button) v.findViewById(R.id.flow_up);
-    	mFlowDown = (Button) v.findViewById(R.id.flow_down);
-    	
+    	View v = inflater.inflate(R.layout.water_price, container, false);
+    	mWaterPrice = (TextView) v.findViewById(R.id.text_water_price);
+    	mPriceUp   = (Button) v.findViewById(R.id.water_price_up);
+    	mPriceDown = (Button) v.findViewById(R.id.water_price_down);
         return v;
     }
 
@@ -50,14 +49,14 @@ public class ModifyFlowFragment extends BaseFragment {
     public void onResume() {
     	super.onResume();
     	
-    	mFlowData.setText(String.valueOf(FData.flow_data));
+    	mWaterPrice.setText(String.valueOf(FData.water_price));
     	/*mFlowUp.setOnClickListener(mOnClickListener);
     	mFlowDown.setOnClickListener(mOnClickListener);
     	
     	mFlowUp.setOnLongClickListener(mOnLongClickListener);
     	mFlowDown.setOnLongClickListener(mOnLongClickListener);*/
     	
-    	mFlowUp.setOnTouchListener(new OnTouchListener() {
+    	mPriceUp.setOnTouchListener(new OnTouchListener() {
 			
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -75,7 +74,7 @@ public class ModifyFlowFragment extends BaseFragment {
 			int count = 0;
 			count = v.getId() == R.id.flow_up ? 1 : -1;
 			FData.flow_data += count;
-			mFlowData.setText(String.valueOf(FData.flow_data));
+			mWaterPrice.setText(String.valueOf(FData.flow_data));
 		}
 	};
     
@@ -86,7 +85,7 @@ public class ModifyFlowFragment extends BaseFragment {
 			int count = 0;
 			count = v.getId() == R.id.flow_up ? 10 : -10;
 			FData.flow_data += count;
-			mFlowData.setText(String.valueOf(FData.flow_data));
+			mWaterPrice.setText(String.valueOf(FData.flow_data));
 			return true;
 		}
 	};

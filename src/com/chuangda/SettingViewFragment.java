@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -114,6 +115,10 @@ public class SettingViewFragment extends BaseFragment {
 		public void onClick(View v) {
 			int position = (Integer) v.getTag();
 			FLog.v("item = "+position);
+			ViewFragment fragment = SettingItems[position].fragment;
+			Message msg = MainActivity.gUIHandler.obtainMessage(
+					MainActivity.MSG_CHANGE_FRAGMENT,fragment);
+			MainActivity.gUIHandler.sendMessageDelayed(msg, 10);
 		}
 	};
 	
@@ -124,5 +129,11 @@ public class SettingViewFragment extends BaseFragment {
 			text = t;
 			fragment = f;
 		}
+	}
+
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

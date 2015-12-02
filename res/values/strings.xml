@@ -20,5 +20,10 @@
     <string name="msg_device_info">设备信息</string>
     
     <string name="msg_exit">按停止键退出</string>
+    
+    <string name="mainview_cost">1升</string>
+    <string name="flow0">1升</string>
+    <string name="flow1">脉冲</string>
+    <string name="setting_text_water_price">元/升</string>
 
 </resources>
