@@ -4,9 +4,9 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.chuangda.common.FLog;
-
 public abstract class BaseFragment extends Fragment {
 
 	public BaseFragment() {

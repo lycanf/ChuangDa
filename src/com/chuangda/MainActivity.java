@@ -1,23 +1,40 @@
 package com.chuangda;
 
-import com.chuangda.common.FLog;
-
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.os.PowerManager.WakeLock;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+import com.chuangda.common.FLog;
+import com.chuangda.widgets.VideoPlay;
+
+interface UICallBack{
+	void sendMsg(Message msg);
+}
+
+public class MainActivity extends Activity implements UICallBack{
 
 	public final static int MSG_CHANGE_FRAGMENT = 9000;
 	public final static int MSG_POP_FRAGMENT = 9001;
 	public final static int MSG_SHOW_TOAST = 9002;
+	public final static int MSG_PLAY_NEXT = 9003;
+	public final static int MSG_VIDEO_COUNT = 9004;
 	
+	public final static String TEXT_NO_VIDEO = "Ã»ÓÐÊÓÆµ";
 	public static Handler gUIHandler = null;
 	static BaseFragment mCurBaseFragment = null;
 	
+	TextView mVideoText ;
+	VideoPlay mVideoPlay;
+	
+	WakeLock wakeLock;
 	//common 
 	public static int COMMON_HEALTH_STATE = 1;
 
@@ -25,21 +42,25 @@ public class MainActivity extends Activity {
 		USER, SETTING,CHANGE_PASSWD,CALIBRATE_FLOW,WATER_PRICE,DEVICE_INFO
 	}
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		gUIHandler = mUIHandler;
-
-		if (savedInstanceState == null) {
-			// Do first time initialization -- add initial fragment.
-			UserViewFragment mUserFragment = UserViewFragment.newInstance();
-			FragmentTransaction ft = getFragmentManager().beginTransaction();
-			ft.add(R.id.main_frame, mUserFragment).commit();
-//			translateFragment(ViewFragment.USER);
-		} else {
-
-		}
+		
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
+		mVideoText = (TextView) findViewById(R.id.main_video_text);
+		mVideoText.setText(TEXT_NO_VIDEO);
+		mVideoPlay = (VideoPlay) findViewById(R.id.main_video_play);
+		mUIHandler.sendEmptyMessageDelayed(MSG_PLAY_NEXT, 10);
+		
+		
+		UserViewFragment mUserFragment = UserViewFragment.newInstance();
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+		ft.add(R.id.main_frame, mUserFragment).commit();
+		
 	}
 
 	private void translateFragment(ViewFragment type) {
@@ -82,14 +103,18 @@ public class MainActivity extends Activity {
 	
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
-		FLog.v("dispatchKeyEvent="+event.getAction());
+		FLog.v("dispatchKeyEvent action="+event.getAction()+" code="+event.getKeyCode());
+		if(mCurBaseFragment.dispatchKeyEvent(event)){
+			return true;
+		}
 		return super.dispatchKeyEvent(event);
 	}
 
 
 
 	Handler mUIHandler = new Handler() {
-		public void handleMessage(android.os.Message msg) {
+		public void handleMessage(Message msg) {
+			FLog.v("mUIHandler msg "+msg.what);
 			switch (msg.what) {
 			case MSG_CHANGE_FRAGMENT:
 				translateFragment((ViewFragment) msg.obj);
@@ -101,10 +126,25 @@ public class MainActivity extends Activity {
 				String str = (String) msg.obj;
 				Toast.makeText(MainActivity.this, str, Toast.LENGTH_LONG).show();
 				break;
+			case MSG_PLAY_NEXT:
+//				mVideoPlay.playNext();
+				mVideoPlay.playTest();
+				break;
+			case MSG_VIDEO_COUNT:
+				mVideoText.setVisibility(msg.arg1 > 0 ? View.INVISIBLE : View.VISIBLE);
+				break;
 			default:
 				mCurBaseFragment.handleUI(msg);
 			}
 		};
 	};
+
+
+
+	@Override
+	public void sendMsg(Message msg) {
+		// TODO Auto-generated method stub
+		mUIHandler.sendMessageDelayed(msg, 10);
+	}
 
 }

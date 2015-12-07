@@ -4,10 +4,6 @@ import android.util.Log;
 
 public class FLog {
 
-	public FLog() {
-		// TODO Auto-generated constructor stub
-	}
-
 	public static boolean SHOW = true;
 	public static String  TAG  = "fq";
 	

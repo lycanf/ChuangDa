@@ -10,35 +10,14 @@
         android:layout_centerInParent="true"
         android:orientation="horizontal" >
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/text_water_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical" >
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/water_price_up"
-                android:layout_gravity="center"
-                android:background="@drawable/ic_launcher" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/text_water_price"
-                android:padding="30dp"
-                android:textColor="#000000"
-                android:textSize="30sp" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/water_price_down"
-                android:layout_gravity="center"
-                android:background="@drawable/ic_launcher" />
-        </LinearLayout>
+            android:padding="30dp"
+            android:textColor="#000000"
+            android:textSize="30sp" />
 
         <TextView
             android:layout_width="wrap_content"

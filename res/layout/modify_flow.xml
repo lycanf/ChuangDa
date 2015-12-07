@@ -17,35 +17,14 @@
             android:text="@string/flow0"
             android:textSize="30sp" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/flow_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical" >
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/flow_up"
-                android:layout_gravity="center"
-                android:background="@drawable/ic_launcher" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/flow_data"
-                android:padding="30dp"
-                android:textColor="#000000"
-                android:textSize="30sp" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/flow_down"
-                android:layout_gravity="center"
-                android:background="@drawable/ic_launcher" />
-        </LinearLayout>
+            android:padding="30dp"
+            android:textColor="#000000"
+            android:textSize="30sp" />
 
         <TextView
             android:layout_width="wrap_content"

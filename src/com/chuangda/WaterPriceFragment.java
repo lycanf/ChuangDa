@@ -1,26 +1,21 @@
 package com.chuangda;
 
+import java.text.DecimalFormat;
+
 import android.os.Bundle;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.chuangda.common.FData;
-import com.chuangda.common.FLog;
+
 
 public class WaterPriceFragment extends BaseFragment {
 
 	private TextView mWaterPrice = null;
-	private Button   mPriceUp = null;
-	private Button   mPriceDown = null;
 	
 	public WaterPriceFragment() {
 	}
@@ -40,8 +35,6 @@ public class WaterPriceFragment extends BaseFragment {
             Bundle savedInstanceState) {
     	View v = inflater.inflate(R.layout.water_price, container, false);
     	mWaterPrice = (TextView) v.findViewById(R.id.text_water_price);
-    	mPriceUp   = (Button) v.findViewById(R.id.water_price_up);
-    	mPriceDown = (Button) v.findViewById(R.id.water_price_down);
         return v;
     }
 
@@ -49,46 +42,10 @@ public class WaterPriceFragment extends BaseFragment {
     public void onResume() {
     	super.onResume();
     	
-    	mWaterPrice.setText(String.valueOf(FData.water_price));
-    	/*mFlowUp.setOnClickListener(mOnClickListener);
-    	mFlowDown.setOnClickListener(mOnClickListener);
-    	
-    	mFlowUp.setOnLongClickListener(mOnLongClickListener);
-    	mFlowDown.setOnLongClickListener(mOnLongClickListener);*/
-    	
-    	mPriceUp.setOnTouchListener(new OnTouchListener() {
-			
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				FLog.v("touch "+event.getAction());
-				return false;
-			}
-		});
+    	Double data = FData.getWaterPrice();
+    	mWaterPrice.setText(new DecimalFormat("##.00").format(data));
     	
     }
-    
-    OnClickListener mOnClickListener = new OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			int count = 0;
-			count = v.getId() == R.id.flow_up ? 1 : -1;
-			FData.flow_data += count;
-			mWaterPrice.setText(String.valueOf(FData.flow_data));
-		}
-	};
-    
-	OnLongClickListener mOnLongClickListener = new OnLongClickListener() {
-		
-		@Override
-		public boolean onLongClick(View v) {
-			int count = 0;
-			count = v.getId() == R.id.flow_up ? 10 : -10;
-			FData.flow_data += count;
-			mWaterPrice.setText(String.valueOf(FData.flow_data));
-			return true;
-		}
-	};
 	
     @Override
     public void onDestroy() {
@@ -105,6 +62,21 @@ public class WaterPriceFragment extends BaseFragment {
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		// TODO Auto-generated method stub
+		if(KeyEvent.ACTION_DOWN == event.getAction()){
+			Double data = FData.getWaterPrice();
+			if(FData.KEYCODE_PRE == event.getKeyCode()){
+				data = data + 0.01;
+				FData.setWaterPrice(data);
+				mWaterPrice.setText(new DecimalFormat("##.00").format(data));
+			}
+			if(FData.KEYCODE_NEXT == event.getKeyCode()){
+				data = data - 0.01;
+				FData.setWaterPrice(data);
+				mWaterPrice.setText(new DecimalFormat("##.00").format(data));
+			}
+			if(FData.KEYCODE_ENTER == event.getKeyCode()){
+			}
+		}
 		return false;
 	}
 }

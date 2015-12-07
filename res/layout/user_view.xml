@@ -30,32 +30,35 @@
         android:layout_weight="1"
         android:paddingTop="@dimen/main_item_vertical_pandding" >
 
-        <TextView
+        <Button
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingLeft="@dimen/main_item_horizontal_pandding"
-            android:id="@+id/user_3l"
-            android:textColor="@color/main_item_text_color"
-            android:textSize="@dimen/main_item_text_size" />
+            android:focusable="false"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textSize="@dimen/main_item_text_size"
+            android:id="@+id/user_3l" />
 
-        <TextView
+        <Button
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingLeft="@dimen/main_item_horizontal_pandding"
-            android:id="@+id/user_5l"
-            android:textColor="@color/main_item_text_color"
-            android:textSize="@dimen/main_item_text_size" />
+            android:focusable="false"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textSize="@dimen/main_item_text_size"
+            android:layout_marginLeft="@dimen/main_item_horizontal_pandding"
+            android:layout_marginRight="@dimen/main_item_horizontal_pandding"
+            android:id="@+id/user_5l"/>
 
-        <TextView
+        <Button
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingLeft="@dimen/main_item_horizontal_pandding"
-            android:id="@+id/user_charge"
-            android:textColor="@color/main_item_text_color"
-            android:textSize="@dimen/main_item_text_size" />
+            android:focusable="false"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textSize="@dimen/main_item_text_size"
+
+            android:id="@+id/user_charge" />
     </LinearLayout>
 
     <com.chuangda.widgets.WaterHealthBar

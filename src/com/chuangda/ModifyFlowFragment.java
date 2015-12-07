@@ -16,11 +16,10 @@ import android.widget.TextView;
 import com.chuangda.common.FData;
 import com.chuangda.common.FLog;
 
+
 public class ModifyFlowFragment extends BaseFragment {
 
 	private TextView mFlowData = null;
-	private Button   mFlowUp = null;
-	private Button   mFlowDown = null;
 	
 	public ModifyFlowFragment() {
 	}
@@ -40,8 +39,6 @@ public class ModifyFlowFragment extends BaseFragment {
             Bundle savedInstanceState) {
     	View v = inflater.inflate(R.layout.modify_flow, container, false);
     	mFlowData = (TextView) v.findViewById(R.id.flow_data);
-    	mFlowUp   = (Button) v.findViewById(R.id.flow_up);
-    	mFlowDown = (Button) v.findViewById(R.id.flow_down);
     	
         return v;
     }
@@ -49,48 +46,9 @@ public class ModifyFlowFragment extends BaseFragment {
     @Override
     public void onResume() {
     	super.onResume();
-    	
-    	mFlowData.setText(String.valueOf(FData.flow_data));
-    	/*mFlowUp.setOnClickListener(mOnClickListener);
-    	mFlowDown.setOnClickListener(mOnClickListener);
-    	
-    	mFlowUp.setOnLongClickListener(mOnLongClickListener);
-    	mFlowDown.setOnLongClickListener(mOnLongClickListener);*/
-    	
-    	mFlowUp.setOnTouchListener(new OnTouchListener() {
-			
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				FLog.v("touch "+event.getAction());
-				return false;
-			}
-		});
-    	
+    	mFlowData.setText(String.valueOf(FData.getFlowData()));
     }
     
-    OnClickListener mOnClickListener = new OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			int count = 0;
-			count = v.getId() == R.id.flow_up ? 1 : -1;
-			FData.flow_data += count;
-			mFlowData.setText(String.valueOf(FData.flow_data));
-		}
-	};
-    
-	OnLongClickListener mOnLongClickListener = new OnLongClickListener() {
-		
-		@Override
-		public boolean onLongClick(View v) {
-			int count = 0;
-			count = v.getId() == R.id.flow_up ? 10 : -10;
-			FData.flow_data += count;
-			mFlowData.setText(String.valueOf(FData.flow_data));
-			return true;
-		}
-	};
-	
     @Override
     public void onDestroy() {
     	// TODO Auto-generated method stub
@@ -105,7 +63,19 @@ public class ModifyFlowFragment extends BaseFragment {
 
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
-		// TODO Auto-generated method stub
+		if(KeyEvent.ACTION_DOWN == event.getAction()){
+			int data = FData.getFlowData();
+			if(FData.KEYCODE_PRE == event.getKeyCode()){
+				FData.setFlowData(++data);
+				mFlowData.setText(String.valueOf(data));
+			}
+			if(FData.KEYCODE_NEXT == event.getKeyCode()){
+				FData.setFlowData(--data);
+				mFlowData.setText(String.valueOf(data));
+			}
+			if(FData.KEYCODE_ENTER == event.getKeyCode()){
+			}
+		}
 		return false;
 	}
 }

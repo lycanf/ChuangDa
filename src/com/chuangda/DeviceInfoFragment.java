@@ -4,17 +4,14 @@ import android.os.Bundle;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.chuangda.common.FData;
-import com.chuangda.common.FLog;
+
+
+
 
 public class DeviceInfoFragment extends BaseFragment {
 
@@ -45,7 +42,7 @@ public class DeviceInfoFragment extends BaseFragment {
     public void onResume() {
     	super.onResume();
     	
-    	mDeviceInfo.setText(FData.device_info);
+    	mDeviceInfo.setText(FData.getDeviceInfo());
     }
     
     @Override

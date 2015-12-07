@@ -8,17 +8,29 @@
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:focusable="false"
         android:layout_weight="1" >
 
-        <VideoView
-            android:id="@+id/video_play"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <com.chuangda.widgets.VideoPlay
+            android:id="@+id/main_video_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:focusable="false"/>
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/main_video_text"
+            android:layout_centerInParent="true"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/main_item_text_size"/>
     </RelativeLayout>
 
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:focusable="true"
         android:layout_weight="1"
         android:id="@+id/main_frame"
          >
