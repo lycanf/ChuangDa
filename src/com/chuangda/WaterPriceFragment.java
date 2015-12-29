@@ -2,6 +2,7 @@ package com.chuangda;
 
 import java.text.DecimalFormat;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.KeyEvent;
@@ -42,7 +43,7 @@ public class WaterPriceFragment extends BaseFragment {
     public void onResume() {
     	super.onResume();
     	
-    	Double data = FData.getWaterPrice();
+    	float data = getData();
     	mWaterPrice.setText(new DecimalFormat("##.00").format(data));
     	
     }
@@ -58,25 +59,71 @@ public class WaterPriceFragment extends BaseFragment {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void setData(float data){
+		FData.setWaterPrice(data);
+		mWaterPrice.setText(new DecimalFormat("##.00").format(data));
+	}
+	
+	public float getData(){
+		float ret = 0;
+		ret = FData.getWaterPrice();
+		return ret;
+	}
 
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		// TODO Auto-generated method stub
 		if(KeyEvent.ACTION_DOWN == event.getAction()){
-			Double data = FData.getWaterPrice();
+			float data = getData();
 			if(FData.KEYCODE_PRE == event.getKeyCode()){
-				data = data + 0.01;
-				FData.setWaterPrice(data);
-				mWaterPrice.setText(new DecimalFormat("##.00").format(data));
+				data = data + 0.01f;
+				setData(data);
 			}
 			if(FData.KEYCODE_NEXT == event.getKeyCode()){
-				data = data - 0.01;
-				FData.setWaterPrice(data);
-				mWaterPrice.setText(new DecimalFormat("##.00").format(data));
+				data = data - 0.01f;
+				setData(data);
 			}
-			if(FData.KEYCODE_ENTER == event.getKeyCode()){
+			
+		}
+		
+		if(KeyEvent.ACTION_UP == event.getAction()){
+			if(FData.KEYCODE_WATER_START == event.getKeyCode()){
+				Message msg = MainActivity.gUIHandler.obtainMessage(
+						MainActivity.MSG_POP_FRAGMENT);
+				MainActivity.gUIHandler.sendMessageDelayed(msg, 10);
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void resetView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onCardOn() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onCardOff() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void startWater() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopWater() {
+		// TODO Auto-generated method stub
+		
 	}
 }

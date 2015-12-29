@@ -6,4 +6,6 @@
     -->
     <dimen name="activity_horizontal_margin">128dp</dimen>
 
+    <dimen name="main_video_width">960px</dimen>
+    <dimen name="setting_width">320px</dimen>
 </resources>

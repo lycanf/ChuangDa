@@ -60,6 +60,43 @@ public class DeviceInfoFragment extends BaseFragment {
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		// TODO Auto-generated method stub
+		if(KeyEvent.ACTION_UP == event.getAction()){
+			if(FData.KEYCODE_WATER_START == event.getKeyCode()){
+				Message msg = MainActivity.gUIHandler.obtainMessage(
+						MainActivity.MSG_POP_FRAGMENT);
+				MainActivity.gUIHandler.sendMessageDelayed(msg, 10);
+			}
+		}
 		return false;
+	}
+
+	@Override
+	public void resetView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onCardOn() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onCardOff() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void startWater() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopWater() {
+		// TODO Auto-generated method stub
+		
 	}
 }

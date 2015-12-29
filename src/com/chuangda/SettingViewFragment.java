@@ -9,12 +9,13 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
 import com.chuangda.MainActivity.ViewFragment;
 import com.chuangda.common.FData;
@@ -27,11 +28,13 @@ public class SettingViewFragment extends BaseFragment {
 	private ListView mListView ;
 	private Context  mContext;
 	SettingItem[] SettingItems = {
-		new SettingItem(R.string.msg_modify_password,ViewFragment.CHANGE_PASSWD),
+		new SettingItem(R.string.msg_device_info,ViewFragment.DEVICE_INFO),
 		new SettingItem(R.string.msg_calibrate_flow,ViewFragment.CALIBRATE_FLOW),
 		new SettingItem(R.string.msg_water_price,ViewFragment.WATER_PRICE),
-		new SettingItem(R.string.msg_device_info,ViewFragment.DEVICE_INFO),
+		new SettingItem(R.string.msg_modify_password,ViewFragment.CHANGE_PASSWD),
 	};
+	
+	private int mCurSelected = 0;
 	
 	public SettingViewFragment() {
 	}
@@ -73,17 +76,23 @@ public class SettingViewFragment extends BaseFragment {
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			RelativeLayout layout = new RelativeLayout(mContext);
+			RelativeLayout.LayoutParams pm = new RelativeLayout.LayoutParams(
+					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+			pm.topMargin = 4;
+			
 			Button view = new Button(mContext);
 			view.setText(getItemString(position));
 			view.setTextSize(ITEM_TEXT_SIZE);
 			view.setGravity(Gravity.CENTER);
 			view.setTag(position);
+			view.setOnClickListener(mOnClickListener);
 			SettingItems[position].btn = view;
+			setBtnSelected(mCurSelected);
 			
-			if(0 == position){
-				view.requestFocus();
-			}
-			return view;
+			layout.addView(view, pm);
+			
+			return layout;
 		}
 		
 		@Override
@@ -115,10 +124,35 @@ public class SettingViewFragment extends BaseFragment {
 		return ret;
 	}
 	
+	OnClickListener mOnClickListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			int position = (Integer) v.getTag();
+			setBtnSelected(position);
+			clickButton(position);
+		}
+	};
+	
+	public void setBtnSelected(int position){
+		mCurSelected = 0;
+		for(int i=0; i < SettingItems.length; i++){
+			if(SettingItems[i].btn == null){
+				continue;
+			}
+			if(i == position){
+				SettingItems[i].btn.setBackgroundColor(FData.COLOR_FOCUSED);
+				mCurSelected = position;
+			}else{
+				SettingItems[i].btn.setBackgroundColor(FData.COLOR_UNFOCUSED);
+			}
+		}
+	}
+	
 	class SettingItem{
 		public int text;
 		public ViewFragment fragment;
-		public Button btn;
+		public Button btn = null;
 		public SettingItem(int t, ViewFragment f){
 			text = t;
 			fragment = f;
@@ -126,43 +160,29 @@ public class SettingViewFragment extends BaseFragment {
 	}
 	
 	private void focusNext(boolean goToNext){
-		int position = 0;
-		for(; position < SettingItems.length; position++){
-			if(SettingItems[position].btn.isFocused()){
-				break;
-			}
-		}
-		if(goToNext && position < (SettingItems.length-1)){
-			SettingItems[++position].btn.requestFocus();
-		}else if(!goToNext && position > 0){
-			SettingItems[--position].btn.requestFocus();
+		if(mCurSelected < (SettingItems.length-1) && goToNext){
+			setBtnSelected(mCurSelected + 1);
+		}else if(mCurSelected > 0 && !goToNext){
+			setBtnSelected(mCurSelected - 1);
 		}else{
-			SettingItems[0].btn.requestFocus();
+			setBtnSelected(0);
 		}
-		
 	}
 	
-	private void clickButton(){
-		int position = 0;
-		for(; position < SettingItems.length; position++){
-			if(SettingItems[position].btn.isFocused()){
-				break;
-			}
-		}
+	private void clickButton(int position){
+		FLog.v("clickButton = "+mCurSelected);
 		if(position >= SettingItems.length){
 			return;
 		}
-		FLog.v("item = "+position);
-		ViewFragment fragment = SettingItems[position].fragment;
+		ViewFragment fragment = SettingItems[mCurSelected].fragment;
 		Message msg = MainActivity.gUIHandler.obtainMessage(
 				MainActivity.MSG_CHANGE_FRAGMENT,fragment);
-		
 		MainActivity.gUIHandler.sendMessageDelayed(msg, 10);
 	}
 
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
-		if(FData.KEYCODE_BACK == event.getKeyCode()){
+		if(FData.KEYCODE_WATER_START == event.getKeyCode()){
 			return true;
 		}
 		if(KeyEvent.ACTION_UP == event.getAction()){
@@ -173,7 +193,7 @@ public class SettingViewFragment extends BaseFragment {
 				focusNext(true);
 			}
 			if(FData.KEYCODE_ENTER == event.getKeyCode()){
-				clickButton();
+				clickButton(mCurSelected);
 			}
 		}
 		return false;
@@ -184,5 +204,35 @@ public class SettingViewFragment extends BaseFragment {
 		Message msg = MainActivity.gUIHandler.obtainMessage(
 				MainActivity.MSG_CHANGE_FRAGMENT,ViewFragment.USER);
 		MainActivity.gUIHandler.sendMessageDelayed(msg, 10);
+	}
+
+	@Override
+	public void resetView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onCardOn() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onCardOff() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void startWater() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopWater() {
+		// TODO Auto-generated method stub
+		
 	}
 }

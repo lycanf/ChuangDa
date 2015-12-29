@@ -9,15 +9,22 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:focusable="false"
-        android:layout_weight="1" >
+        android:layout_weight="3" >
 
         <com.chuangda.widgets.VideoPlay
             android:id="@+id/main_video_play"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:focusable="false"/>
-        
+        <ImageView 
+             android:id="@+id/main_video_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:focusable="false"
+            android:background="@drawable/ic_launcher"
+            android:visibility="invisible"/>
         <TextView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -25,6 +32,14 @@
             android:layout_centerInParent="true"
             android:textColor="#ffffff"
             android:textSize="@dimen/main_item_text_size"/>
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/main_test_text"
+            android:background="#ff0000"
+            android:textSize="30sp"
+            android:text="TEST"></TextView>
     </RelativeLayout>
 
     <FrameLayout

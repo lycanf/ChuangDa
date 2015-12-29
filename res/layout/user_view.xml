@@ -1,72 +1,79 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
-    android:baselineAligned="false"
-    android:orientation="vertical" >
+    android:background="@drawable/bg_user" >
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingTop="@dimen/main_item_vertical_pandding"
         android:id="@+id/user_cost"
-        android:textColor="@color/main_item_text_color"
-        android:textSize="@dimen/main_item_text_size" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="176px"
+        android:gravity="right"
+        android:paddingRight="20px"
+        android:textSize="120sp" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingTop="@dimen/main_item_vertical_pandding"
         android:id="@+id/user_water"
-        android:textColor="@color/main_item_text_color"
-        android:textSize="@dimen/main_item_text_size" />
-
-    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingTop="@dimen/main_item_vertical_pandding" >
+        android:layout_height="wrap_content"
+        android:layout_marginTop="485px"
+        android:gravity="right"
+        android:paddingRight="20px"
+        android:textSize="100sp" />
 
+    <Button
+        android:id="@+id/user_3l"
+        android:layout_width="120px"
+        android:layout_height="120px"
+        android:layout_marginLeft="40px"
+        android:layout_marginTop="@dimen/user_margin_top_volume"
+        android:background="@drawable/water0"
+        android:focusable="false" />
+
+    <Button
+        android:id="@+id/user_5l"
+        android:layout_width="120px"
+        android:layout_height="120px"
+        android:layout_marginLeft="188px"
+        android:layout_marginTop="@dimen/user_margin_top_volume"
+        android:background="@drawable/water1"
+        android:focusable="false" />
+
+    <Button
+        android:id="@+id/user_charge"
+        android:layout_width="120px"
+        android:layout_height="120px"
+        android:layout_marginLeft="332px"
+        android:layout_marginTop="@dimen/user_margin_top_volume"
+        android:background="@drawable/pay"
+        android:focusable="false" />
+    
         <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:focusable="false"
-            style="?android:attr/buttonBarButtonStyle"
-            android:textSize="@dimen/main_item_text_size"
-            android:id="@+id/user_3l" />
+        android:id="@+id/user_good0"
+        android:layout_width="133px"
+        android:layout_height="133px"
+        android:layout_marginLeft="31px"
+        android:layout_marginTop="@dimen/user_margin_top_quality"
+        android:background="@drawable/good0"
+        android:focusable="false" />
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:focusable="false"
-            style="?android:attr/buttonBarButtonStyle"
-            android:textSize="@dimen/main_item_text_size"
-            android:layout_marginLeft="@dimen/main_item_horizontal_pandding"
-            android:layout_marginRight="@dimen/main_item_horizontal_pandding"
-            android:id="@+id/user_5l"/>
+    <Button
+        android:id="@+id/user_good1"
+        android:layout_width="133px"
+        android:layout_height="133px"
+        android:layout_marginLeft="182px"
+        android:layout_marginTop="@dimen/user_margin_top_quality"
+        android:background="@drawable/good1"
+        android:focusable="false" />
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:focusable="false"
-            style="?android:attr/buttonBarButtonStyle"
-            android:textSize="@dimen/main_item_text_size"
+    <Button
+        android:id="@+id/user_good2"
+        android:layout_width="133px"
+        android:layout_height="133px"
+        android:layout_marginLeft="328px"
+        android:layout_marginTop="@dimen/user_margin_top_quality"
+        android:background="@drawable/good2"
+        android:focusable="false" />
 
-            android:id="@+id/user_charge" />
-    </LinearLayout>
-
-    <com.chuangda.widgets.WaterHealthBar
-        android:id="@+id/main_health_bar"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingBottom="@dimen/main_item_vertical_pandding"
-        android:paddingTop="@dimen/main_item_vertical_pandding" />
-
-</LinearLayout>
+</RelativeLayout>

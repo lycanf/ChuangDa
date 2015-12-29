@@ -46,7 +46,7 @@ public class ModifyFlowFragment extends BaseFragment {
     @Override
     public void onResume() {
     	super.onResume();
-    	mFlowData.setText(String.valueOf(FData.getFlowData()));
+    	mFlowData.setText(String.valueOf(getData()));
     }
     
     @Override
@@ -58,24 +58,73 @@ public class ModifyFlowFragment extends BaseFragment {
 	@Override
 	public void handleUI(Message msg) {
 		// TODO Auto-generated method stub
+		if(msg.what == MainActivity.MSG_MODIFY_FLOW){
+			mFlowData.setText(String.valueOf(msg.arg1));
+		}
+	}
+
+	public void setData(int data){
+		FData.setFlowData(data);
+		
+	}
+	
+	public int getData(){
+		int ret = 0;
+		ret = FData.getFlowData();
+		return ret;
+	}
+	
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		if(KeyEvent.ACTION_DOWN == event.getAction()){
+			int data = getData();
+			if(FData.KEYCODE_PRE == event.getKeyCode()){
+				++data;
+				setData(data);
+			}
+			if(FData.KEYCODE_NEXT == event.getKeyCode()){
+				--data;
+				setData(data);
+			}
+		}
+		
+		if(KeyEvent.ACTION_UP == event.getAction()){
+			if(FData.KEYCODE_WATER_START == event.getKeyCode()){
+				Message msg = MainActivity.gUIHandler.obtainMessage(
+						MainActivity.MSG_POP_FRAGMENT);
+				MainActivity.gUIHandler.sendMessageDelayed(msg, 10);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void resetView() {
+		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public boolean dispatchKeyEvent(KeyEvent event) {
-		if(KeyEvent.ACTION_DOWN == event.getAction()){
-			int data = FData.getFlowData();
-			if(FData.KEYCODE_PRE == event.getKeyCode()){
-				FData.setFlowData(++data);
-				mFlowData.setText(String.valueOf(data));
-			}
-			if(FData.KEYCODE_NEXT == event.getKeyCode()){
-				FData.setFlowData(--data);
-				mFlowData.setText(String.valueOf(data));
-			}
-			if(FData.KEYCODE_ENTER == event.getKeyCode()){
-			}
-		}
-		return false;
+	public void onCardOn() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onCardOff() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void startWater() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopWater() {
+		// TODO Auto-generated method stub
+		
 	}
 }

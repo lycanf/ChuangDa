@@ -7,6 +7,16 @@
     <dimen name="main_item_vertical_pandding">16dp</dimen>
     <dimen name="main_item_horizontal_pandding">10dp</dimen>
     
-    <dimen name="main_item_text_size">30sp</dimen>
-
+    <dimen name="main_item_text_size">120sp</dimen>
+    
+    
+    <!-- 1080p -->
+    <dimen name="user_margin_top_price">196px</dimen>
+    <dimen name="user_margin_top_flow">490px</dimen>
+    <dimen name="user_margin_top_volume">616px</dimen>
+    <dimen name="user_margin_top_quality">840px</dimen>
+    
+	<dimen name="user_padding_right_price">56px</dimen>
+	
+	
 </resources>

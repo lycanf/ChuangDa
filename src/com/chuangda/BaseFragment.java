@@ -39,5 +39,10 @@ public abstract class BaseFragment extends Fragment {
     	MainActivity.mCurBaseFragment = this;
     }
     abstract public void handleUI(Message msg);
+    abstract public void resetView();
     abstract public boolean dispatchKeyEvent(KeyEvent event);
+    abstract public void onCardOn();
+    abstract public void onCardOff();
+    abstract public void startWater();
+    abstract public void stopWater();
 }
