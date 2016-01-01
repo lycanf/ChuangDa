@@ -1,13 +1,9 @@
 package com.chuangda.common;
 
-import java.util.ArrayList;
-
 import com.chuangda.MainActivity;
+import com.chuangda.data.FQueue;
 import com.chuangda.widgets.MODBUS_ITEM;
 
-import android.content.ClipData.Item;
-import android.graphics.Color;
-import android.os.Message;
 class CMD_ITEM{
 	public final byte[] cmd_head ;
 	public byte[] cmd_read ;
@@ -27,22 +23,32 @@ class CMD_ITEM{
 }
 
 public class HandlePortData {
-	public static byte[] DATA_CMD_HEAD = new byte[5] ;
+	public static byte[] DATA_CMD_HEAD = new byte[8] ;
 	public static int 		mCmdLine = -1;
 	public static int mCurCmdNum = 0;
 	private static int mFlowCur = 0;
 	public static int mFlowPre = 0;
 	public static boolean mRecognizeCmd = true;
-
+	public static boolean WATER_ON = false;
+	
+	private static boolean isAnswer = false;
 	
 	public static CMD_ITEM[] mReadCmds = {
-		new CMD_ITEM(new byte[] {(byte)0x01, (byte)0x03 ,(byte)0x06}, 8),//water flow
-		new CMD_ITEM(new byte[] {(byte)0x01, (byte)0x03 ,(byte)0x28}, 42),//read 20 Bits
-		new CMD_ITEM(new byte[] {(byte)0x01, (byte)0x03 ,(byte)0x0a}, 12),//read TDS
-		new CMD_ITEM(new byte[] {(byte)0x01, (byte)0x05 ,(byte)0x00}, 5),//water open
-		new CMD_ITEM(new byte[] {(byte)0x01, (byte)0x06 ,(byte)0x00, (byte)0x13}, 4),//set 19 pulse
+		new CMD_ITEM(FConst.HEAD_READ_FLOW, 8),//water flow
+		new CMD_ITEM(FConst.HEAD_READ_ALL, 42),//read 20 Bits
+		new CMD_ITEM(FConst.HEAD_READ_TDS, 12),//read TDS
+		new CMD_ITEM(FConst.HEAD_ON, 2),//water open
+		new CMD_ITEM(FConst.HEAD_SET19, 4),//set 19 pulse
+		new CMD_ITEM(FConst.HEAD_CLEAR, 2),//set 19 pulse
+		new CMD_ITEM(FConst.HEAD_OFF, 2),//water off
 	};
 	
+	public static boolean getAnswerState(){
+		return isAnswer;
+	}
+	public static void setAnswerState(){
+		isAnswer = false;
+	}
 	public static int getCurFlow(){
 		return mFlowCur;
 	}
@@ -78,11 +84,6 @@ public class HandlePortData {
 			
 		}else{
 			ret = true;
-/*			for(int i=0; i < DATA_CMD_HEAD.length; i++){
-				if(DATA_CMD_HEAD[i] != cmdHead[i]){
-					ret = false;
-				}
-			}*/
 			int offset = DATA_CMD_HEAD.length - cmdHead.length;
 			for(int i=cmdHead.length-1; i >=0; i--){
 				if(DATA_CMD_HEAD[i+offset] != cmdHead[i]){
@@ -105,7 +106,7 @@ public class HandlePortData {
 			for(int i=0; i<mReadCmds.length; i++){
 				CMD_ITEM item = mReadCmds[i];
 				if(isCmd(item.cmd_head)){
-					FLog.t("start cmd "+i);
+					FLog.t("get cmd "+i);
 					mRecognizeCmd = false;
 					mCmdLine = i;
 					mCurCmdNum = -1;
@@ -131,6 +132,12 @@ public class HandlePortData {
 			case 4:
 				parseCmd19(singleInt, singleByte);
 				break;
+			case 5:
+				parseCmdClear(singleInt, singleByte);
+				break;
+			case 6:
+				parseCmdWaterOff(singleInt, singleByte);
+				break;
 			}
 		}
 
@@ -139,6 +146,18 @@ public class HandlePortData {
 	
 	public static int getCmdLine(){
 		return mCmdLine;
+	}
+	
+	private static void parseCmdClear(int vint, byte vbyte){
+		CMD_ITEM item = parseCmd(vbyte);
+//		FLog.v("parseCmdClear  "+vint);
+		if(item.crcRight){
+			FLog.v("parseCmdClear success ");
+		}
+		if(item.readEnd){
+			FLog.v("parseCmdClear end ");
+			parseCmdEnd(item);
+		}
 	}
 	
 	private static void parseCmd19(int vint, byte vbyte){
@@ -154,28 +173,29 @@ public class HandlePortData {
 					MainActivity.MSG_MODIFY_FLOW,val,0).sendToTarget();
 		}
 		if(item.readEnd){
-			clearItemCmd();
+			parseCmdEnd(item);
 		}
 	}
 	
 	private static void parseCmdWaterOn(int vint, byte vbyte){
 		CMD_ITEM item = parseCmd(vbyte);
 		if(item.crcRight){
-			FLog.v("parseCmdWaterOn "+item.cmd_read[1]);
-			byte temp = item.cmd_read[1];
-			if((temp & 0xff) == 0xff){
-				MainActivity.gUIHandler.obtainMessage(
-						MainActivity.MSG_SHOW_TOAST,"water open pre="+WaterMgr.isWaterStart()).sendToTarget();
-				WaterMgr.setWaterStart(true);
-			}
-			if(temp == 0x00){
-				MainActivity.gUIHandler.obtainMessage(
-						MainActivity.MSG_SHOW_TOAST,"water close pre="+WaterMgr.isWaterStart()).sendToTarget();
-				WaterMgr.setWaterStart(false);
-			}
+//			FLog.t("parseCmdWaterOn success ");
+			WATER_ON = true;
 		}
 		if(item.readEnd){
-			clearItemCmd();
+			parseCmdEnd(item);
+		}
+	}
+	
+	private static void parseCmdWaterOff(int vint, byte vbyte){
+		CMD_ITEM item = parseCmd(vbyte);
+		if(item.crcRight){
+//			FLog.t("parseCmdWaterOff success ");
+			WATER_ON = false;
+		}
+		if(item.readEnd){
+			parseCmdEnd(item);
 		}
 	}
 	
@@ -187,19 +207,19 @@ public class HandlePortData {
 			MODBUS_ITEM.setTDS(item.cmd_read);
 		}
 		if(item.readEnd){
-			clearItemCmd();
+			parseCmdEnd(item);
 		}
 	}
 	
 	private static void parseCmdAll(int vint, byte vbyte){
 		CMD_ITEM item = parseCmd(vbyte);
 		if(item.crcRight){
-			FLog.t("parseCmdAll success ");
+//			FLog.t("parseCmdAll success ");
 //			FLog.t(item.cmd_read);
 			MODBUS_ITEM.setItem(item.cmd_read);
 		}
 		if(item.readEnd){
-			clearItemCmd();
+			parseCmdEnd(item);
 		}
 	}
 	
@@ -215,17 +235,17 @@ public class HandlePortData {
 			}
 		}
 		if(item.readEnd){
-			clearItemCmd();
+			parseCmdEnd(item);
 		}
 	}
 	
 	private static CMD_ITEM parseCmd(byte vbyte){
 		if(mCmdLine < 0 || mCmdLine >= mReadCmds.length ){
-			FLog.t("parseCmdFlow error mCmdLine="+mCmdLine);
+			FLog.e("parseCmdFlow error mCmdLine="+mCmdLine);
 		}
 		CMD_ITEM item = mReadCmds[mCmdLine];
 		if(mCurCmdNum < 0 || mCurCmdNum >= item.cmd_read.length){
-			FLog.t("parseCmdFlow error mCurCmdNum="+mCurCmdNum);
+			FLog.e("parseCmdFlow error mCurCmdNum="+mCurCmdNum);
 		}
 		item.cmd_read[mCurCmdNum] = vbyte;
 //		FLog.t("parseCmdFlow "+mCurCmdNum+" = "+vint);
@@ -238,5 +258,12 @@ public class HandlePortData {
 			item.readEnd = true;
 		}
 		return item;
+	}
+	
+	private static void parseCmdEnd(CMD_ITEM item){
+//		FLog.t("parseCmdEnd ");
+		clearItemCmd();
+		FQueue.SingleCmdHead = item.cmd_head;
+		isAnswer = true;
 	}
 }

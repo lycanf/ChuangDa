@@ -7,21 +7,18 @@ public class WaterMgr {
 	public static int WATER_LEVEL_5 = 500;
 	public static boolean WATER_TIMER = false;
 	
-	private static boolean isSetWaterOn = false;
+	public static final int WATER_STATE_READ = 1;
+	public static final int WATER_STATE_ON = 2;
+	public static final int WATER_STATE_OFF = 3;
+	public static int WATER_STATE = WATER_STATE_READ;
+	
 	private static int      START_WATER_FLOW = HandlePortData.getCurFlow();
 	private static int 		mWaterLevel = 0;
 
 	public static String TAG = "watermgr";
 	
-	public static boolean isWaterStart(){
-		return isSetWaterOn;
-	}
-	public static void setWaterStart(boolean b){
-		isSetWaterOn = b;
-	}
-	
 	public static void checkWater(){
-		if(!isSetWaterOn){
+		if(!HandlePortData.WATER_ON){
 			return;
 		}
 		if(WATER_TIMER){
@@ -35,8 +32,8 @@ public class WaterMgr {
 	}
 	
 	public static void start(){
-		FLog.v(TAG,"start "+isSetWaterOn);
-		if(isSetWaterOn){
+		FLog.v(TAG,"start "+HandlePortData.WATER_ON);
+		if(HandlePortData.WATER_ON){
 			return;
 		}
 //		isSetWaterOn = true;

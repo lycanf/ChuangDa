@@ -21,7 +21,7 @@ public class FLog {
 	
 	public static void m(String str){
 		if(!SHOW) return;
-		Log.v(TAG_M,str);
+//		Log.v(TAG_M,str);
 	}
 	
 	public static void t(byte[] str){
@@ -36,6 +36,11 @@ public class FLog {
 	public static void v(String t, String str){
 		if(!SHOW) return;
 		Log.v(t,str);
+	}
+	
+	public static void e(String str){
+		if(!SHOW) return;
+		Log.e(TAG,str);
 	}
 	
 	public static void showClassName(){

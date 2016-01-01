@@ -20,6 +20,7 @@ import com.chuangda.common.FCmd;
 import com.chuangda.common.FConst;
 import com.chuangda.common.FData;
 import com.chuangda.common.FLog;
+import com.chuangda.common.HandlePortData;
 import com.chuangda.common.WaterMgr;
 import com.chuangda.widgets.MODBUS_ITEM;
 
@@ -155,11 +156,11 @@ public class UserViewFragment extends BaseFragment {
 			}
 		}
 		if(position == mCurSelected || position == mCurTDS){
-			FLog.m("return setBtnSelected "+mCurSelected+" mCurTDS="+mCurTDS);
+			FLog.e("return setBtnSelected "+mCurSelected+" mCurTDS="+mCurTDS);
 			return;
 		}
 		if(position < 0 || position >= mButtons.length){
-			FLog.m("return setBtnSelected position="+position);
+			FLog.e("return setBtnSelected position="+position);
 			return;
 		}
 		//select water
@@ -231,7 +232,7 @@ public class UserViewFragment extends BaseFragment {
 	}
 
 	private void focusNext(boolean goToNext){
-		FLog.t("cur="+mCurSelected+" "+goToNext);
+//		FLog.t("cur="+mCurSelected+" "+goToNext);
 		if(mCurSelected >= 0 && mCurSelected < (LINE_LEN_WATER-1) && goToNext){
 			setBtnSelected(mCurSelected + 1);
 		}else if(mCurSelected > 0 && !goToNext){
@@ -248,7 +249,7 @@ public class UserViewFragment extends BaseFragment {
 		public void onClick(View v) {
 			int position = (Integer) v.getTag();
 			FLog.v("onclick "+position);
-			if(MainActivity.mCardOn){
+			if(MainActivity.isCardOn()){
 				setBtnSelected(position);
 				clickButton(position);
 			}
@@ -264,11 +265,19 @@ public class UserViewFragment extends BaseFragment {
 		}
 	}
 	
+	long mKeyInteral = 0;
+	private boolean btnCanPress(){
+		boolean ret = System.currentTimeMillis() - mKeyInteral > 512;
+		
+		ret = MainActivity.isCardOn();
+		return ret;
+	}
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		// TODO Auto-generated method stub
 
 		if(KeyEvent.ACTION_UP == event.getAction()){
+			FLog.v("user key up "+event.getKeyCode());
 			if(FData.KEYCODE_PRE == event.getKeyCode()){
 //				focusNext(false);
 				FCmd.test();
@@ -277,16 +286,20 @@ public class UserViewFragment extends BaseFragment {
 				focusNext(true);
 			}
 			if(FData.KEYCODE_ENTER == event.getKeyCode()){
-				clickButton(mCurSelected);
+				if(btnCanPress()){
+					clickButton(mCurSelected);
+				}
 			}
 			
 			if(FData.KEYCODE_WATER_START == event.getKeyCode()){
-				if(MainActivity.mCardOn){
-					WaterMgr.start();
+				if(btnCanPress() && !HandlePortData.WATER_ON){
+//					WaterMgr.start();
+					WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_ON;
 				}
 			}
 			if(FData.KEYCODE_WATER_STOP == event.getKeyCode()){
-				if(MainActivity.mCardOn){
+				WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_OFF;
+				if(!MainActivity.mCardOn){
 					WaterMgr.stop();
 				}
 			}

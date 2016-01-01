@@ -21,7 +21,6 @@ public class MODBUS_ITEM {
 	
 	public static void setTDS(byte[] cmd){
 		TDS_OUT = DataCal.getFrom2Bytes(cmd[8], cmd[9]);
-		FLog.m(System.currentTimeMillis()+" MODBUS_ITEM TDS_OUT="+TDS_OUT );
 		
 		if(TDS_OUT != mLastTDS_OUT){
 			mLastTDS_OUT = TDS_OUT;
@@ -63,9 +62,11 @@ public class MODBUS_ITEM {
 			FLOW =  DataCal.getFrom2Bits(high,low);
 		}
 		String str = "\n\rTDS_OUT="+TDS_OUT+"\n\rVOLTAGE="+VOLTAGE+"\n\rPULSE="+PULSE+"\n\rPULSE_L="+PULSE_L+"\n\rFLOW="+FLOW;
-		FLog.m(str);
 		MainActivity.gUIHandler.obtainMessage(
 				MainActivity.MSG_TEST_TEXT, str).sendToTarget();
+		
+		//test
+		setTDS(cmd);
 	}
 
 	

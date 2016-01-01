@@ -151,7 +151,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 			mCheckTDS = new CheckTDS();
 			mCheckTDS.start();
 			//test
-			new CheckAll().start();
+//			new CheckAll().start();
 		}
 
 	}
@@ -159,13 +159,13 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	private class CheckAll extends Thread{
 		@Override
 		public void run() {
-			while(true){
+			while(!isCardOn()){
 				Thread.currentThread();
 				try {
 					FCmd.readAll();
 					Thread.sleep(1000);
+					mCheckTDSTime = System.currentTimeMillis();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -176,7 +176,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	private class CheckTDS extends Thread{
 		@Override
 		public void run() {
-			while(true){
+			while(!isCardOn()){
 				Thread.currentThread();
 				try {
 					FCmd.readTDS();
@@ -193,7 +193,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	private class CheckCardOn extends Thread{
 		public void run() {
 			if(null != mMC){
-				water_volume_pre = -1;
 				boolean isRightRun = false;
 				int lastFlow = 0;
 				while(true){
@@ -201,14 +200,9 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 					try {
 						mMC.close();
 						mMC.connect();
-					/*	if(!mMC.isConnected()){
-							break;
-						}*/
 						mCardOn = true;
 						if(!IS_ADMIN){
-							refreshUserView();
-							FCmd.readWater();
-//							FLog.t("Check flow "+HandlePortData.mFlowCur);
+							handleWater();
 							if((HandlePortData.getCurFlow()-lastFlow) > 0){
 								WaterMgr.checkWater();
 								lastFlow = HandlePortData.getCurFlow();
@@ -245,12 +239,34 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		};
 	};
 	
+	private void handleWater(){
+		switch(WaterMgr.WATER_STATE){
+		case WaterMgr.WATER_STATE_READ:
+			FCmd.readWater();
+			break;
+		case WaterMgr.WATER_STATE_ON:
+			WaterMgr.start();
+			break;
+		case WaterMgr.WATER_STATE_OFF:
+			WaterMgr.stop();
+			break;
+		}
+		if(HandlePortData.WATER_ON){
+			WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_READ;
+		}
+	}
+	
 	private void removedCard(){
 		FLog.v("removedCard ");
 		mCardOn = false;
 		IS_ADMIN = false;
 		clearData();
 		mUIHandler.obtainMessage(MSG_CARD_OFF).sendToTarget();
+		startTDSCheck();
+	}
+	
+	public static boolean isCardOn(){
+		return mCardOn;
 	}
 	
 	public void startWater(){
@@ -379,7 +395,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally{
-			FLog.t("set money "+setMoney);
+			
 		}
 	}
 	
@@ -488,37 +504,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		}
 	}
 	
-	private static int water_volume_pre = 0;
-	private void refreshUserView(){
-		/*if(!mCardOn){
-			return;
-		}
-		int water_volume = HandlePortData.getFlow();
-		if(water_volume_pre < 0){
-			if(water_volume >= 0){
-				FLog.v("get water_volume_ori="+water_volume_pre);
-				water_volume_pre  = water_volume;
-				mUIHandler.obtainMessage(MSG_SHOW_WATER_VOLUME, String.valueOf(water_volume)).sendToTarget();
-			}else{
-				mUIHandler.obtainMessage(MSG_SHOW_WATER_VOLUME, "µÈ´ý...").sendToTarget();
-			}
-			return ;
-		}
-		int volumeChange = water_volume_pre - water_volume ;
-		if(volumeChange >= 0){
-			return;
-		}else{
-			water_volume_pre = water_volume;
-//			FLog.t("volumeChange="+volumeChange+" water_volume="+water_volume);
-		}
-		mUIHandler.obtainMessage(MSG_SHOW_WATER_VOLUME, String.valueOf(water_volume)).sendToTarget();
-		
-		float water_price = DataNative.getRateWater();
-		water_price = volumeChange/water_price;
-		changeMoney(water_price);*/
-		
-	}
-	
 	private void translateFragment(ViewFragment type) {
 		BaseFragment newFragment = null;
 		mCurViewFragment = type;
@@ -564,7 +549,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 //		FLog.v("dispatchKeyEvent action="+event.getAction()+" code="+event.getKeyCode());
-		if(mCardOn){
+		if(isCardOn()){
 			mCurBaseFragment.dispatchKeyEvent(event);
 		}
 		return true;
