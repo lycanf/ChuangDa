@@ -241,19 +241,22 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	
 	private void handleWater(){
 		switch(WaterMgr.WATER_STATE){
-		case WaterMgr.WATER_STATE_READ:
-			FCmd.readWater();
-			break;
 		case WaterMgr.WATER_STATE_ON:
-			WaterMgr.start();
+			if(HandlePortData.WATER_ON){
+				WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_READ;
+			}else{
+				WaterMgr.start();
+			}
 			break;
 		case WaterMgr.WATER_STATE_OFF:
 			WaterMgr.stop();
 			break;
+		case WaterMgr.WATER_STATE_READ:
+			FCmd.readWater();
+			break;
 		}
-		if(HandlePortData.WATER_ON){
-			WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_READ;
-		}
+		
+
 	}
 	
 	private void removedCard(){
@@ -261,6 +264,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		mCardOn = false;
 		IS_ADMIN = false;
 		clearData();
+		WaterMgr.stop();
 		mUIHandler.obtainMessage(MSG_CARD_OFF).sendToTarget();
 		startTDSCheck();
 	}
@@ -584,7 +588,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 				mVideoBg.setVisibility(msg.arg1 > 0 ? View.INVISIBLE : View.VISIBLE);
 				break;
 			case MainActivity.MSG_CARD_OFF:
-				WaterMgr.stop();
 				if(mCurViewFragment != ViewFragment.USER){
 					getFragmentManager().popBackStack();
 					translateFragment(ViewFragment.USER);

@@ -106,7 +106,7 @@ public class HandlePortData {
 			for(int i=0; i<mReadCmds.length; i++){
 				CMD_ITEM item = mReadCmds[i];
 				if(isCmd(item.cmd_head)){
-					FLog.t("get cmd "+i);
+//					FLog.t("get cmd "+i);
 					mRecognizeCmd = false;
 					mCmdLine = i;
 					mCurCmdNum = -1;

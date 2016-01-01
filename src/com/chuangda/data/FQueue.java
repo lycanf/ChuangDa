@@ -62,9 +62,11 @@ public class FQueue {
 	}*/
 	
 	public void add(FItemQueue item){
-		if(item.tryCmdCount > 0){
+		if(item.tryCmdCount > 1){
+			FLog.t("FQueue clear     "+item.name);
 			mQueue.clear();
 		}
+//		FLog.t("FQueue add     "+item.name);
 		mQueue.add(item);
 	}
 	
@@ -105,7 +107,6 @@ public class FQueue {
 						}
 					}
 					mLastRunTime = System.currentTimeMillis();
-					Thread.sleep(item.interval);
 				} catch (InterruptedException e) {
 					FLog.e("FQueue error = "+e.getMessage());
 					e.printStackTrace();

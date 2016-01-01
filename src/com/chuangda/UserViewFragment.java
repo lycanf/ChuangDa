@@ -279,8 +279,8 @@ public class UserViewFragment extends BaseFragment {
 		if(KeyEvent.ACTION_UP == event.getAction()){
 			FLog.v("user key up "+event.getKeyCode());
 			if(FData.KEYCODE_PRE == event.getKeyCode()){
-//				focusNext(false);
-				FCmd.test();
+				focusNext(false);
+//				FCmd.test();
 			}
 			if(FData.KEYCODE_NEXT == event.getKeyCode()){
 				focusNext(true);
