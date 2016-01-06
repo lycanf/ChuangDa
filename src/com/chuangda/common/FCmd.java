@@ -1,5 +1,6 @@
 package com.chuangda.common;
 
+import com.chuangda.MainActivity;
 import com.chuangda.data.FItemQueue;
 import com.chuangda.data.FQueue;
 
@@ -11,10 +12,13 @@ public class FCmd {
 	}
 
 	public static int testNum = 0;
+	public static boolean tesrOn = false;
 	public static void test(){
 		FLog.v("do test");
 		testNum = 0;
-		readWater();
+		
+		tesrOn = !tesrOn;
+		MainActivity.sendData(tesrOn ? FConst.CMD_ON : FConst.CMD_OFF);
 	}
 	
 	public static void setPulse(int pulse){

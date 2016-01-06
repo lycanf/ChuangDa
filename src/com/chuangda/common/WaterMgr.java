@@ -18,7 +18,7 @@ public class WaterMgr {
 	public static String TAG = "watermgr";
 	
 	public static void checkWater(){
-		if(!HandlePortData.WATER_ON){
+		if(!HandlePortData.isWaterOn()){
 			return;
 		}
 		if(WATER_TIMER){
@@ -32,8 +32,8 @@ public class WaterMgr {
 	}
 	
 	public static void start(){
-		FLog.v(TAG,"start "+HandlePortData.WATER_ON);
-		if(HandlePortData.WATER_ON){
+		FLog.v(TAG,"start "+HandlePortData.isWaterOn());
+		if(HandlePortData.isWaterOn()){
 			return;
 		}
 //		isSetWaterOn = true;
@@ -46,6 +46,7 @@ public class WaterMgr {
 		WATER_TIMER  = false;
 		mWaterLevel = 0;
 		FCmd.waterOpen(false);
+//		MainActivity.sendData(CMD_OFF);
 	}
 	
 	public static void start3L(){

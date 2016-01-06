@@ -34,6 +34,7 @@ import com.chuangda.common.FLog;
 import com.chuangda.common.HandlePortData;
 import com.chuangda.common.ToolClass;
 import com.chuangda.common.WaterMgr;
+import com.chuangda.data.FItemCard;
 import com.chuangda.widgets.VideoPlay;
 
 interface UICallBack{
@@ -74,7 +75,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	CheckTDS mCheckTDS;
 	//common 
 	public static int COMMON_HEALTH_STATE = 1;
-
 	
 	// read car
 	private NfcAdapter mAdapter;
@@ -90,8 +90,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	public static double envale_MAX = 10000;
 
 	private static String mCardNum = null;
-	private static Double mUserMoney = (double) 0;
-	private static Double mUserMoneyOri = (double) 0;
+	private static double mUserMoneyOri = 0;
 	public static String mUserMoneyStr = "-1";
 	
 	enum ViewFragment {
@@ -195,7 +194,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 			if(null != mMC){
 				boolean isRightRun = false;
 				int lastFlow = 0;
-				while(true){
+				while(isForceStop()){
 					isRightRun = false;
 					try {
 						mMC.close();
@@ -207,10 +206,14 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 								WaterMgr.checkWater();
 								lastFlow = HandlePortData.getCurFlow();
 								float flow = HandlePortData.getCurFlow()/(float)1000;
-								float cost = (float) (mUserMoneyOri - FData.getWaterPrice() * flow);
-								setMoney(cost);
-								float[] waterPrice = {cost,flow};
-								mUIHandler.obtainMessage(MSG_SHOW_WATER_PRICE, waterPrice).sendToTarget();
+								if(flow > 0 && flow < 10){
+									float cost = (float) (mUserMoneyOri - FData.getWaterPrice() * flow);
+									setMoney(cost);
+									float[] waterPrice = {cost,flow};
+									mUIHandler.obtainMessage(MSG_SHOW_WATER_PRICE, waterPrice).sendToTarget();
+								}else{
+									forceStop();
+								}
 							}
 						}
 						
@@ -242,21 +245,27 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	private void handleWater(){
 		switch(WaterMgr.WATER_STATE){
 		case WaterMgr.WATER_STATE_ON:
-			if(HandlePortData.WATER_ON){
+			if(HandlePortData.isWaterOn()){
 				WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_READ;
 			}else{
 				WaterMgr.start();
 			}
 			break;
 		case WaterMgr.WATER_STATE_OFF:
-			WaterMgr.stop();
+			if(HandlePortData.isWaterOn()){
+				WaterMgr.stop();
+			}else{
+				
+			}
 			break;
 		case WaterMgr.WATER_STATE_READ:
-			FCmd.readWater();
+			if(HandlePortData.isWaterOn()){
+				FCmd.readWater();
+			}else{
+				
+			}
 			break;
 		}
-		
-
 	}
 	
 	private void removedCard(){
@@ -334,10 +343,11 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 				byte[] response0 = mMC.readBlock(28);
 				String value = AesTool.decrypt(SEED,
 						ToolClass.bytesToHexString(response0));
-				mUserMoneyOri = mUserMoney = Double.valueOf(value);
+				mUserMoneyOri = Double.valueOf(value);
 				FLog.v("readBalance value="+value);
 				FLog.v("readBalance mUserMoney="+mUserMoneyOri);
 				bCanReadMoney = true;
+				mbForceStop = false;
 				
 				float[] waterPrice = {Float.valueOf(value), 0};
 				mUIHandler.obtainMessage(MSG_SHOW_WATER_PRICE, waterPrice).sendToTarget();
@@ -347,7 +357,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 			}
 			
 			//is admin
-			
 			if(!bCanReadMoney && auth){
 				IS_ADMIN = mMC.authenticateSectorWithKeyA(1, keyA);
 				FLog.v("I'm adimin !");
@@ -403,69 +412,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		}
 	}
 	
-	public static synchronized boolean changeMoney(double iadd){
-		/*if(iadd > 0){
-			return false;
-		}*/
-		boolean auth2 = false;
-		boolean auth =false;
-		byte[] testdata = null;
-		boolean ret = false;
-		try {
-//			mMC.close();
-//			mMC.connect();
-			FLog.v("isconected "+mMC.isConnected());
-			auth2 = mMC.authenticateSectorWithKeyA(7, keyA);
-			if (auth2) {
-				byte[] resold = mMC.readBlock(28);
-				// 原来的值加充值的值等于现在卡里的值
-				double iold = Double.valueOf(AesTool.decrypt(SEED,
-						ToolClass.bytesToHexString(resold)));
-//				FLog.v("changeMoney ori money "+iold);
-				
-				double f = iold + iadd;
-				BigDecimal b = new BigDecimal(f);  
-				double inew = b.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();  
-				
-				String ienstr = Double.toString(inew);
-//				FLog.v("changeMoney total money "+inew);
-				
-				String instr = AesTool.encrypt(SEED, ienstr);
-				if ((inew >= envalue_MIN)
-						&& (inew <= envale_MAX)
-						&& (instr.length() == 32)) {
-					// String ien=inew+"";
-					testdata = ToolClass.hexStringToBytes(instr);
-					mMC.writeBlock(28, testdata);
-//					FLog.v("changeMoney charge done !" );
-					
-					auth = mMC.authenticateSectorWithKeyA(7, keyA);
-					if (auth) {
-						byte[] response0 = mMC.readBlock(28);
-						String value = AesTool.decrypt(SEED,
-								ToolClass.bytesToHexString(response0));
-						mUserMoney = Double.valueOf(value);
-						mUserMoneyStr = value;
-//						gUIHandler.obtainMessage(MSG_SHOW_WATER_PRICE, value).sendToTarget();
-						FLog.v("changeMoney success value="+value);
-						ret = true;
-					}
-				} else {
-					FLog.v("changeMoney set error ! inew="+inew+" length="+instr.length());
-				}
-			}
-//			mMC.close();
-		} catch (IOException e) {
-			FLog.v("changeMoney no card !");
-			e.printStackTrace();
-		} catch (Exception e) {
-			FLog.v("changeMoney Exception="+e.getMessage());
-			e.printStackTrace();
-		}finally {
-//			FLog.v("changeMoney finally");
-			return ret;
-		}
-	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -481,13 +427,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 								.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 				mMC = MifareClassic.get(mNewTag);
 				
-/*				try {
-					mMC.close();
-					mMC.connect();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
 				
 				clearData();// should 
 				readBalance();
@@ -545,7 +484,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
 		return super.onKeyUp(keyCode, event);
 	}
 	
@@ -553,6 +491,11 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 //		FLog.v("dispatchKeyEvent action="+event.getAction()+" code="+event.getKeyCode());
+		
+		if(KeyEvent.ACTION_UP == event.getAction() && FData.KEYCODE_PRE == event.getKeyCode()){
+			FCmd.test();
+		}
+		
 		if(isCardOn()){
 			mCurBaseFragment.dispatchKeyEvent(event);
 		}
@@ -579,7 +522,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 				break;
 			case MSG_PLAY_NEXT:
 				mVideoPlay.playNext();
-//				mVideoPlay.playTest();
 				break;
 			case MSG_VIDEO_COUNT:
 				FLog.v("MSG_VIDEO_COUNT "+msg.arg1);
@@ -603,7 +545,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 
 	@Override
 	public void sendMsg(Message msg) {
-		// TODO Auto-generated method stub
 		mUIHandler.sendMessageDelayed(msg, 10);
 	}
 
@@ -612,6 +553,22 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		super.onDestroy();
 	}
 
+	
+	private static boolean mbForceStop = false;
+	public static boolean isForceStop(){
+		return mbForceStop;
+	}
+	public static void forceStop(){
+		WaterMgr.stop();
+		try {
+			mMC.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		mbForceStop = true;
+		gUIHandler.obtainMessage(MSG_SHOW_TOAST,"数据出错，请重新放置水卡").sendToTarget();
+	}
+	
 	public static void sendData(String str){
 		try {
 			mOutputStream.write(str.getBytes());
@@ -623,8 +580,9 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	
 	public static void sendData(byte[] cmd){
 		try {
+			mOutputStream.flush();
 			mOutputStream.write(cmd);
-//			mOutputStream.write('\n');
+			FLog.t("send "+ToolClass.bytesToHexString(cmd));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -633,8 +591,8 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	@Override
 	protected void onDataReceived(byte[] buffer, int size) {
 		// TODO Auto-generated method stub
+		FLog.t("datareceice="+ToolClass.bytesToHexString(buffer));
 		for(int i=0; i<size; i++){
-//			FLog.t(String.format("xxx %2d 0x%02x", FCmd.testNum, buffer[i] & 0xff));
 			HandlePortData.handleByte(buffer[i]);
 			FCmd.testNum++;
 		}

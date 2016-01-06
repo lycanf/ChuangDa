@@ -14,7 +14,7 @@ public class DataNative {
 	public static final String KEY_A = "KEY_A";
 	
 	public static SharedPreferences sp;
-	public static final float water_price = 4.51f;
+	public static final float water_price = 0.4f;
 	public static final int flow_data = 450;
 	static final String DefaltKeyA = "CD8888888888";
 //	static final String DefaltKeyA = "ffffffffffff";

@@ -280,7 +280,6 @@ public class UserViewFragment extends BaseFragment {
 			FLog.v("user key up "+event.getKeyCode());
 			if(FData.KEYCODE_PRE == event.getKeyCode()){
 				focusNext(false);
-//				FCmd.test();
 			}
 			if(FData.KEYCODE_NEXT == event.getKeyCode()){
 				focusNext(true);
@@ -292,15 +291,15 @@ public class UserViewFragment extends BaseFragment {
 			}
 			
 			if(FData.KEYCODE_WATER_START == event.getKeyCode()){
-				if(btnCanPress() && !HandlePortData.WATER_ON){
+				if(btnCanPress() && !HandlePortData.isWaterOn()){
 //					WaterMgr.start();
 					WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_ON;
 				}
 			}
 			if(FData.KEYCODE_WATER_STOP == event.getKeyCode()){
 				WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_OFF;
+				WaterMgr.stop();
 				if(!MainActivity.mCardOn){
-					WaterMgr.stop();
 				}
 			}
 		}

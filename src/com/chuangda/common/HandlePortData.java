@@ -29,7 +29,7 @@ public class HandlePortData {
 	private static int mFlowCur = 0;
 	public static int mFlowPre = 0;
 	public static boolean mRecognizeCmd = true;
-	public static boolean WATER_ON = false;
+	private static boolean WATER_ON = false;
 	
 	private static boolean isAnswer = false;
 	
@@ -48,6 +48,10 @@ public class HandlePortData {
 	}
 	public static void setAnswerState(){
 		isAnswer = false;
+	}
+	
+	public static boolean isWaterOn(){
+		return WATER_ON;
 	}
 	public static int getCurFlow(){
 		return mFlowCur;
@@ -106,7 +110,7 @@ public class HandlePortData {
 			for(int i=0; i<mReadCmds.length; i++){
 				CMD_ITEM item = mReadCmds[i];
 				if(isCmd(item.cmd_head)){
-//					FLog.t("get cmd "+i);
+					FLog.t("get cmd "+i);
 					mRecognizeCmd = false;
 					mCmdLine = i;
 					mCurCmdNum = -1;
@@ -261,7 +265,7 @@ public class HandlePortData {
 	}
 	
 	private static void parseCmdEnd(CMD_ITEM item){
-//		FLog.t("parseCmdEnd ");
+		FLog.t("parseCmdEnd ");
 		clearItemCmd();
 		FQueue.SingleCmdHead = item.cmd_head;
 		isAnswer = true;

@@ -26,40 +26,6 @@ public class FQueue {
 	
 	final int CheckNum = 10;
 	final int TryNum = 3;
-	/*public synchronized void addSingle(FItemQueue item){
-		mQueue.clear();
-		SingleCmdHead = null;
-		mQueue.add(item);
-		int needCheck = 0;
-		boolean isOK = false;
-		for(int i=0; i<TryNum && !isOK; i++){
-			needCheck = 0;
-			while(needCheck < CheckNum){
-				Thread.currentThread();
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if(item.cmd_head == SingleCmdHead){
-					FLog.v("addSingle OK");
-					isOK = true;
-					break;
-				}
-				needCheck++;
-			}
-			if(needCheck >= CheckNum && (i<TryNum-1)){
-				FLog.v("addSingle try="+i);
-				mQueue.add(item);//one more try
-			}else{
-				FLog.v("addSingle out");
-				break;
-			}
-		}
-		FLog.v("addSingle end "+isOK);
-		
-	}*/
 	
 	public void add(FItemQueue item){
 		if(item.tryCmdCount > 1){
