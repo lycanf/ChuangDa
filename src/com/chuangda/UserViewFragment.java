@@ -268,7 +268,6 @@ public class UserViewFragment extends BaseFragment {
 	long mKeyInteral = 0;
 	private boolean btnCanPress(){
 		boolean ret = System.currentTimeMillis() - mKeyInteral > 512;
-		
 		ret = MainActivity.isCardOn();
 		return ret;
 	}
@@ -292,15 +291,12 @@ public class UserViewFragment extends BaseFragment {
 			
 			if(FData.KEYCODE_WATER_START == event.getKeyCode()){
 				if(btnCanPress() && !HandlePortData.isWaterOn()){
-//					WaterMgr.start();
 					WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_ON;
 				}
 			}
 			if(FData.KEYCODE_WATER_STOP == event.getKeyCode()){
 				WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_OFF;
 				WaterMgr.stop();
-				if(!MainActivity.mCardOn){
-				}
 			}
 		}
 

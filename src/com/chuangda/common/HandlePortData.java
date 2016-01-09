@@ -184,7 +184,7 @@ public class HandlePortData {
 	private static void parseCmdWaterOn(int vint, byte vbyte){
 		CMD_ITEM item = parseCmd(vbyte);
 		if(item.crcRight){
-//			FLog.t("parseCmdWaterOn success ");
+			FLog.t("parseCmdWaterOn success ");
 			WATER_ON = true;
 		}
 		if(item.readEnd){
@@ -195,7 +195,7 @@ public class HandlePortData {
 	private static void parseCmdWaterOff(int vint, byte vbyte){
 		CMD_ITEM item = parseCmd(vbyte);
 		if(item.crcRight){
-//			FLog.t("parseCmdWaterOff success ");
+			FLog.t("parseCmdWaterOff success ");
 			WATER_ON = false;
 		}
 		if(item.readEnd){
@@ -265,7 +265,7 @@ public class HandlePortData {
 	}
 	
 	private static void parseCmdEnd(CMD_ITEM item){
-		FLog.t("parseCmdEnd ");
+//		FLog.t("parseCmdEnd ");
 		clearItemCmd();
 		FQueue.SingleCmdHead = item.cmd_head;
 		isAnswer = true;

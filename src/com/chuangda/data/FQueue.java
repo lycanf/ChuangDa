@@ -44,7 +44,7 @@ public class FQueue {
 			while(true){
 				try {
 					FItemQueue item = mQueue.take();
-					FLog.t(item.name+" start ********************* mQueue size="+mQueue.size());
+					FLog.t(item.name+" start "+item.name+" ******** mQueue size="+mQueue.size());
 					SingleCmdHead = null;
 					if(null != item.cmd){
 						CMD_TIME = item.createTime;
@@ -61,11 +61,9 @@ public class FQueue {
 									break;
 								}
 								tryCount++;
-								if(tryCount > 3){
-									FLog.t("FQueue try="+tryCount+" name="+item.name);
-								}
 							}
 							if(runOk){
+//								FLog.t("FQueue do command "+item.name);
 								break;
 							}else{
 								FLog.t("FQueue error !!!!!!!!!!!!!!!! "+item.name);
