@@ -51,12 +51,7 @@ public class ChangePasswordFragment extends BaseFragment {
     
     private void updatePasswd(){
     	boolean ret = false;
-    	try {
-			ret = MainActivity.modifyPW();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	ret = MainActivity.modifyPW();
     	String str = ret ? "修改成功" : "修改失败";
     	Message msg = MainActivity.gUIHandler.obtainMessage(
 				MainActivity.MSG_SHOW_TOAST,str);

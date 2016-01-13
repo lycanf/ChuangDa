@@ -49,7 +49,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	public final static int MSG_PLAY_NEXT = 9003;
 	public final static int MSG_VIDEO_COUNT = 9004;
 	public final static int MSG_SHOW_WATER_PRICE= 9005;
-//	public final static int MSG_SHOW_WATER_VOLUME= 9006;
+	public final static int MSG_SHOW_WATER_VOLUME= 9006;
 	public final static int MSG_CARD_OFF = 9007;
 	public final static int MSG_CARD_ON= 9008;
 	public final static int MSG_SHOW_TDS= 9009;
@@ -93,8 +93,11 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	private static Double mUserMoneyOri = (double) 0;
 	public static String mUserMoneyStr = "-1";
 	
+	public static FItemCard  CardNew = new FItemCard();
+	public static FItemCard  CardCur = new FItemCard();
+	
 	enum ViewFragment {
-		USER, SETTING,CHANGE_PASSWD,CALIBRATE_FLOW,WATER_PRICE,DEVICE_INFO
+		USER, SETTING,CHANGE_PASSWD,CALIBRATE_FLOW,WATER_PRICE,DEVICE_INFO,PAY
 	}
 
 
@@ -119,6 +122,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 			
 		
 		UserViewFragment mUserFragment = UserViewFragment.newInstance();
+//		PayFragment mUserFragment = PayFragment.newInstance();
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.add(R.id.main_frame, mUserFragment).commit();
 		
@@ -200,24 +204,25 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 						mMC.close();
 						mMC.connect();
 						mCardOn = true;
+						mMC.close();
+						
 						if(!IS_ADMIN){
 							handleWater();
-							if((HandlePortData.getCurFlow()-lastFlow) > 0){
-								WaterMgr.checkWater();
-								lastFlow = HandlePortData.getCurFlow();
-								float flow = HandlePortData.getCurFlow()/(float)1000;
-								float cost = (float) (mUserMoneyOri - FData.getWaterPrice() * flow);
-								if(cost <= 0){
-									cost = 0;
-									forceStop();
+							if(HandlePortData.isWaterOn()){
+								if(WaterMgr.isWaterTimer()){
+									float flow = HandlePortData.getCurFlow()/(float)1000;
+									mUIHandler.obtainMessage(MSG_SHOW_WATER_VOLUME, flow).sendToTarget();
+									WaterMgr.checkWater();
+									
+								}else if((HandlePortData.getCurFlow()-lastFlow) > 0){
+									lastFlow = HandlePortData.getCurFlow();
+									setCostMoney();
 								}
-								setMoney(cost);
-								float[] waterPrice = {cost,flow};
-								mUIHandler.obtainMessage(MSG_SHOW_WATER_PRICE, waterPrice).sendToTarget();
+							}else{
+								
 							}
 						}
 						
-						mMC.close();
 						Thread.currentThread();
 						Thread.sleep(FConst.CHECK_INTERVAL);
 						isRightRun = true;
@@ -282,6 +287,30 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		return mCardOn;
 	}
 	
+	public static float getMoneyLeft(float totalFlow){
+		float cost = (float) (mUserMoneyOri - FData.getWaterPrice() * totalFlow /(float)1000);
+		return cost;
+	}
+	public static float[] setCostMoney(){
+		float flow = HandlePortData.getCurFlow();
+		float cost = getMoneyLeft(flow);
+		if(cost <= 0){
+			cost = 0;
+			forceStop("余额不足");
+		}
+		setMoney(cost);
+		float[] waterPrice = {cost,flow/(float)1000};
+		gUIHandler.obtainMessage(MSG_SHOW_WATER_PRICE, waterPrice).sendToTarget();
+		return waterPrice;
+	}
+	
+	public static boolean isMoneyEnough(int flowcost){
+		float flow = flowcost/(float)1000;
+		float cost = (float) (mUserMoneyOri - FData.getWaterPrice() * flow);
+		FLog.v("isMoneyEnough flowcost="+flowcost+" -- cost="+cost);
+		return cost > 0;
+	}
+	
 	public void startWater(){
 		
 	}
@@ -292,24 +321,34 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	}
 	
 	public static boolean IS_ADMIN = false;
-	public static boolean modifyPW() throws Exception{
+	public static boolean modifyPW(){
 		boolean auth1 = false;
-		if(null == mMC || !mMC.isConnected()){
-			return false;
+		boolean ret = false;
+		try {
+			mMC.close();
+			mMC.connect();
+			auth1 = mMC.authenticateSectorWithKeyA(1, MifareClassic.KEY_DEFAULT);//keyA,MifareClassic.KEY_DEFAULT
+			if (auth1) {
+				//Log.e("d","cno_read_ture");
+				byte[] response_0 = mMC.readBlock(4);
+				String str = ToolClass.bytesToHexString(response_0);
+				FLog.v("set KEY A !!!!!!!!!!!!!!! ="+str);
+				String str1 = AesTool.decrypt(SEED,ToolClass.bytesToHexString(response_0));
+				FLog.v("set KEY A !!!!!!!!!!!!!!! str1="+str1);
+				keyA = ToolClass.hexStringToBytes(str1);
+				DataNative.setKeyA(str1);
+				ret = true;
+			}
+			mMC.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			return ret;
 		}
-		auth1 = mMC.authenticateSectorWithKeyA(1, keyA);
-		if (auth1) {
-			//Log.e("d","cno_read_ture");
-			byte[] response_0 = mMC.readBlock(4);
-			String str = ToolClass.bytesToHexString(response_0);
-			FLog.v("set KEY A !!!!!!!!!!!!!!! ="+str);
-			String str1 = AesTool.decrypt(SEED,ToolClass.bytesToHexString(response_0));
-			FLog.v("set KEY A !!!!!!!!!!!!!!! str1="+str1);
-			keyA = ToolClass.hexStringToBytes(str1);
-			DataNative.setKeyA(str1);
-			return true;
-		}
-		return false;
 	}
 	
 	public synchronized void readBalance() {
@@ -317,12 +356,14 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		boolean auth = false;
 		boolean auth0 = false;
 		IS_ADMIN = false;
+		
+//		setMoney(0.5);
 		try {
 			mMC.close();
 			mMC.connect();
 			FLog.v("readBalance keyA="+ToolClass.bytesToHexString(keyA));
 			//read card number
-			auth0 = mMC.authenticateSectorWithKeyA(0, keyA);//MifareClassic.KEY_DEFAULT
+			auth0 = mMC.authenticateSectorWithKeyA(0, MifareClassic.KEY_DEFAULT);//MifareClassic.KEY_DEFAULT
 			FLog.v("readBalance read card number "+auth0);
 			if (auth0) {
 				//Log.e("d","cno_read_ture");
@@ -335,8 +376,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 						.bytesToHexString(response_no)));
 				FLog.v("readBalance mCardNum="+mCardNum);
 			}
-			
-//			setMoney(0.1);
 			
 			//read money
 			auth = mMC.authenticateSectorWithKeyA(7, keyA);
@@ -385,19 +424,34 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		}
 	}
 	
-	private void readMoney() throws Exception{
+	public static String getMoney(){
 		boolean auth = false;
-		auth = mMC.authenticateSectorWithKeyA(7, keyA);
-		if (auth) {
-			byte[] response0 = mMC.readBlock(28);
-			String value = AesTool.decrypt(SEED,
-					ToolClass.bytesToHexString(response0));
-			FLog.v("readMoney "+value);
+		String ret = null;
+		try {
+			mMC.close();
+			mMC.connect();
+			auth = mMC.authenticateSectorWithKeyA(7, keyA);
+			if (auth) {
+				byte[] response0 = mMC.readBlock(28);
+				ret = AesTool.decrypt(SEED,
+						ToolClass.bytesToHexString(response0));
+				FLog.v("getMoney "+ret);
+			}
+			mMC.close();
+		} catch (IOException e) {
+			FLog.v("getMoney "+e.getMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			FLog.v("getMoney "+e.getMessage());
+			e.printStackTrace();
+		}finally{
+			return ret;
 		}
+
 	}
 	
 	@SuppressWarnings("finally")
-	private synchronized boolean setMoney(double setMoney){
+	public synchronized static boolean setMoney(double setMoney){
 		boolean ret = false;
 		if(setMoney < 0 || setMoney > 10000){
 			FLog.v("set money error "+setMoney);
@@ -406,8 +460,10 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		boolean auth2 = false;
 		byte[] testdata = null;
 		try {
-			auth2 = mMC.authenticateSectorWithKeyA(7, keyA);
-			FLog.v("set Money "+auth2);
+			mMC.close();
+			mMC.connect();
+			auth2 = mMC.authenticateSectorWithKeyA(7, keyA);//MifareClassic.KEY_DEFAULT
+			FLog.v("set Money "+auth2+" setMoney="+setMoney);
 			if (auth2) {
 				String ienstr = String.format("%.3f", setMoney);
 //				FLog.v("set Money ienstr="+ienstr);
@@ -422,6 +478,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 					FLog.v("set Money error "+instr.length());
 				}
 			}
+			mMC.close();
 		} catch (IOException e) {
 			FLog.e("set Money "+e.getMessage());
 			e.printStackTrace();
@@ -451,6 +508,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 				
 				
 				clearData();// should 
+				WaterMgr.init();
 				readBalance();
 				
 				if(mUserMoneyOri > 0 || IS_ADMIN){
@@ -495,6 +553,9 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 			break;
 		case DEVICE_INFO:
 			newFragment = DeviceInfoFragment.newInstance();
+			break;
+		case PAY:
+			newFragment = PayFragment.newInstance();
 			break;
 		default:
 			break;
@@ -585,11 +646,14 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	public static boolean isForceStop(){
 		return mbForceStop;
 	}
-	public static void forceStop(){
+	public static void forceStop(String str){
 		FLog.v("forceStop !!!!!!!!!!!");
+		if(null == str){
+			str = "请重新放置水卡";
+		}
 		WaterMgr.stop();
 		mbForceStop = true;
-		gUIHandler.obtainMessage(MSG_SHOW_TOAST,"请重新放置水卡").sendToTarget();
+		gUIHandler.obtainMessage(MSG_SHOW_TOAST,str).sendToTarget();
 	}
 	
 	public static void sendData(String str){
@@ -603,7 +667,9 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	
 	public static void sendData(byte[] cmd){
 		try {
-			mOutputStream.write(cmd);
+			if(null != mOutputStream){
+				mOutputStream.write(cmd);
+			}
 //			costsend "+ToolClass.bytesToHexString(cmd));
 		} catch (IOException e) {
 			e.printStackTrace();

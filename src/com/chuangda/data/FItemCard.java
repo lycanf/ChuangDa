@@ -2,12 +2,17 @@ package com.chuangda.data;
 
 public class FItemCard {
 
-	public static String CardNum = "";
-	public static double UserMoney = 0;
+	public  String CardNum = "";
+	public  double UserMoney = 0;
+	public  boolean isUsing = false;
+	public  boolean isReady = false;
 	
 	
-	public static void sclear(){
+	public  void sclear(){
 		CardNum = "";
+		UserMoney = 0;
+		isUsing = false;
+		isReady = false;
 	}
 	public FItemCard() {
 		// TODO Auto-generated constructor stub

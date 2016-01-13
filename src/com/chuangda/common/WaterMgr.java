@@ -3,9 +3,11 @@ package com.chuangda.common;
 import com.chuangda.MainActivity;
 
 public class WaterMgr {
-	public static int WATER_LEVEL_3 = 300;
-	public static int WATER_LEVEL_5 = 500;
-	public static boolean WATER_TIMER = false;
+	public static final int WATER_LEVEL_3 = 300;
+	public static final int WATER_LEVEL_5 = 500;
+	public static final int WATER_LEVEL_0 = 0;
+	
+	private static boolean WATER_TIMER = false;
 	
 	public static final int WATER_STATE_READ = 1;
 	public static final int WATER_STATE_ON = 2;
@@ -14,21 +16,64 @@ public class WaterMgr {
 	
 	private static int      START_WATER_FLOW = HandlePortData.getCurFlow();
 	private static int 		mWaterLevel = 0;
+	private static int 		mWaterLevelStart = 0;
+	private static int 		mWaterLeft = 0;
+	private static int 		mStartWaterFlow3L= 0;
+	private static int 		mStartWaterFlow5L= 0;
 
 	public static String TAG = "watermgr";
+	
+	public static int getWaterLevelStart(){
+		int ret = mWaterLevelStart;
+		mWaterLevelStart = 0;
+		return ret;
+	}
+	public static int setWaterLevelStart(int level){
+		mWaterLevelStart = level;
+		return mWaterLevelStart;
+	}
+	
+	public static int getWaterLevel(){
+		return mWaterLevel;
+	}
+	
+	public static int getWaterLeft(){
+		return mWaterLeft;
+	}
+	
+	public static int getStartWaterFlow(){
+		return START_WATER_FLOW;
+	}
+	public static boolean isWaterTimer(){
+		return WATER_TIMER;
+	}
+	public static int getStartWaterFlow3L(){
+		return mStartWaterFlow3L;
+	}
+	public static int getStartWaterFlow5L(){
+		return mStartWaterFlow5L;
+	}
 	
 	public static void checkWater(){
 		if(!HandlePortData.isWaterOn()){
 			return;
 		}
-		if(WATER_TIMER){
-			FLog.v(TAG,"checkWater "+mWaterLevel+" -- "+HandlePortData.getCurFlow());
-			if(mWaterLevel < HandlePortData.getCurFlow()){
+		if(isWaterTimer()){
+			int waterUsed = HandlePortData.getCurFlow() - getStartWaterFlow();
+			mWaterLeft = mWaterLevel - waterUsed;
+			FLog.v(TAG,"checkWater "+mWaterLevel+" -- "+mWaterLeft);
+			if(mWaterLeft < 0){
 				MainActivity.gUIHandler.obtainMessage(
 						MainActivity.MSG_SHOW_TOAST,"checkWater stop "+mWaterLevel).sendToTarget();
 				stop();
+				init();
 			}
 		}
+	}
+	
+	public static void init(){
+		WATER_TIMER  = false;
+		mWaterLevel = 0;
 	}
 	
 	public static void start(){
@@ -36,33 +81,41 @@ public class WaterMgr {
 		if(HandlePortData.isWaterOn()){
 			return;
 		}
-//		isSetWaterOn = true;
 		FCmd.waterOpen(true);
 	}
 	
 	public static void stop(){
 		FLog.v(TAG,"stop");
-//		isSetWaterOn = false;
-		WATER_TIMER  = false;
-		mWaterLevel = 0;
 		FCmd.waterOpen(false);
 //		MainActivity.sendData(CMD_OFF);
 	}
 	
-	public static void start3L(){
+	public static boolean start3L(){
 		FLog.v(TAG,"start3L");
-		start();
+		boolean is3LNew = mWaterLevel != WATER_LEVEL_3;
+		if(is3LNew){
+			START_WATER_FLOW = HandlePortData.getCurFlow();
+			mStartWaterFlow3L = START_WATER_FLOW;
+		}
+//		start();
+		WATER_STATE = WATER_STATE_ON;
 		WATER_TIMER = true;
 		mWaterLevel = WATER_LEVEL_3;
-		START_WATER_FLOW = HandlePortData.getCurFlow();
+		return is3LNew;
 	}
 	
-	public static void start5L(){
+	public static boolean start5L(){
 		FLog.v(TAG,"start5L");
-		start();
+		boolean is5LNew = mWaterLevel != WATER_LEVEL_5;
+		if(is5LNew){
+			START_WATER_FLOW = HandlePortData.getCurFlow();
+			mStartWaterFlow5L = START_WATER_FLOW;
+		}
+//		start();
+		WATER_STATE = WATER_STATE_ON;
 		WATER_TIMER = true;
 		mWaterLevel = WATER_LEVEL_5;
-		START_WATER_FLOW = HandlePortData.getCurFlow();
+		return is5LNew;
 	}
 	
 }

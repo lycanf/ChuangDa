@@ -15,6 +15,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.chuangda.MainActivity.ViewFragment;
 import com.chuangda.common.DataCal;
 import com.chuangda.common.FCmd;
 import com.chuangda.common.FConst;
@@ -204,6 +205,11 @@ public class UserViewFragment extends BaseFragment {
 /*			mViewCost.setText(String.valueOf(value[0]));
 			mViewWater.setText(String.valueOf(value[1]));*/
 			break;
+		case MainActivity.MSG_SHOW_WATER_VOLUME:
+			float valueVolume = (Float) msg.obj;
+			String costVolume = String.format("%.2f", valueVolume);
+			mViewWater.setText(costVolume);
+			break;
 		case MainActivity.MSG_SHOW_TDS:
 			handleTDS();
 			break;
@@ -256,12 +262,85 @@ public class UserViewFragment extends BaseFragment {
 		}
 	};
 	private void clickButton(int position){
-		FLog.v("clickButton "+position);
+		if(mCurSelected == 2){
+			if(HandlePortData.isWaterOn()){
+				MainActivity.gUIHandler.obtainMessage(
+						MainActivity.MSG_SHOW_TOAST,"请停水后，进行充值").sendToTarget();
+			}else{
+				MainActivity.gUIHandler.obtainMessage(MainActivity.MSG_CHANGE_FRAGMENT,
+						ViewFragment.PAY).sendToTarget();
+			}
+			return;
+		}
+		beginWater();
+	}
+	
+	private int getFlowAgain(){
+		int ret = -1;
+		int curFlow = HandlePortData.getCurFlow();
 		if(mCurSelected == 0){
-			WaterMgr.start3L();
+			if(WaterMgr.getWaterLevel() == WaterMgr.WATER_LEVEL_3){
+				if(HandlePortData.isWaterOn()){
+					return ret;
+				}else{
+					ret = curFlow + WaterMgr.getWaterLeft();
+					return ret;
+				}
+			}else if(WaterMgr.getWaterLevel() == WaterMgr.WATER_LEVEL_5
+					|| WaterMgr.getWaterLevel() == WaterMgr.WATER_LEVEL_0){
+				ret = curFlow + WaterMgr.WATER_LEVEL_3;
+				return ret;
+			}
 		}else if(mCurSelected == 1){
-			WaterMgr.start5L();
-		}else if(mCurSelected == 2){
+			if(WaterMgr.getWaterLevel() == WaterMgr.WATER_LEVEL_5){
+				if(HandlePortData.isWaterOn()){
+					return ret;
+				}else{
+					ret = curFlow + WaterMgr.getWaterLeft();
+					return ret;
+				}
+			}else if(WaterMgr.getWaterLevel() == WaterMgr.WATER_LEVEL_3
+					|| WaterMgr.getWaterLevel() == WaterMgr.WATER_LEVEL_0){
+				ret = curFlow + WaterMgr.WATER_LEVEL_5;
+				return ret;
+			}
+		}else{
+			
+		}
+		return ret;
+	}
+	
+	private void beginWater(){
+		FLog.v("beginWater "+mCurSelected);
+		int flowTotal = 0;
+		float moneyLeft = 0;
+		float moneyCur = 0;
+		String costStr = "";
+		boolean isMoneyEnough = false;
+		flowTotal = getFlowAgain();
+		FLog.v("beginWater flowTotal="+flowTotal);
+		if(flowTotal<0){
+			return;
+		}
+		moneyLeft = MainActivity.getMoneyLeft(flowTotal);
+		isMoneyEnough = moneyLeft > 0;
+		FLog.v("clickButton moneyCur="+moneyCur+" moneyCost="+moneyLeft);
+		
+		if(isMoneyEnough){
+			if(MainActivity.setMoney(moneyLeft)){
+				if(mCurSelected == 0){
+					WaterMgr.start3L();
+				}else if(mCurSelected == 1){
+					WaterMgr.start5L();
+				}
+				costStr = String.format("%.2f", moneyLeft);
+				mViewCost.setText(costStr);
+			}else{
+				MainActivity.forceStop(null);
+			}
+		}else{
+			MainActivity.gUIHandler.obtainMessage(
+					MainActivity.MSG_SHOW_TOAST,"余额不足").sendToTarget();
 		}
 	}
 	
@@ -291,12 +370,25 @@ public class UserViewFragment extends BaseFragment {
 			
 			if(FData.KEYCODE_WATER_START == event.getKeyCode()){
 				if(btnCanPress() && !HandlePortData.isWaterOn()){
-					WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_ON;
+					if(WaterMgr.isWaterTimer()){
+						beginWater();
+					}else{
+						WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_ON;
+					}
 				}
 			}
 			if(FData.KEYCODE_WATER_STOP == event.getKeyCode()){
 				WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_OFF;
 				WaterMgr.stop();
+				int curFlow = HandlePortData.getCurFlow();
+				float moneyLeft = MainActivity.getMoneyLeft(curFlow);
+				String costStr = null;
+				if(MainActivity.setMoney(moneyLeft)){
+					costStr = String.format("%.2f", moneyLeft);
+					mViewCost.setText(costStr);
+				}else{
+					MainActivity.forceStop(null);
+				}
 			}
 		}
 

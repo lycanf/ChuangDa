@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_pay" >
+
+    <TextView
+        android:id="@+id/money10"
+        android:layout_width="130px"
+        android:layout_height="80px"
+        android:layout_marginLeft="33px"
+        android:layout_marginTop="314px"
+        android:gravity="center"
+        android:text="10元"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/money50"
+        android:layout_width="130px"
+        android:layout_height="80px"
+        android:layout_marginLeft="180px"
+        android:layout_marginTop="314px"
+        android:gravity="center"
+        android:text="50元"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/money100"
+        android:layout_width="130px"
+        android:layout_height="80px"
+        android:layout_marginLeft="320px"
+        android:layout_marginTop="314px"
+        android:gravity="center"
+        android:text="100元"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/money200"
+        android:layout_width="130px"
+        android:layout_height="80px"
+        android:layout_marginLeft="33px"
+        android:layout_marginTop="436px"
+        android:gravity="center"
+        android:text="200元"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/money300"
+        android:layout_width="130px"
+        android:layout_height="80px"
+        android:layout_marginLeft="180px"
+        android:layout_marginTop="436px"
+        android:gravity="center"
+        android:text="300元"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/money500"
+        android:layout_width="130px"
+        android:layout_height="80px"
+        android:layout_marginLeft="320px"
+        android:layout_marginTop="436px"
+        android:gravity="center"
+        android:text="500元"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/money_pay"
+        android:layout_width="180px"
+        android:layout_height="120px"
+        android:layout_marginLeft="33px"
+        android:layout_marginTop="560px"
+        android:gravity="center"
+        android:text="-120+"
+        android:textStyle="bold"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/money_msg"
+        android:layout_width="400px"
+        android:layout_height="260px"
+        android:layout_marginLeft="33px"
+        android:layout_marginTop="720px"
+        android:gravity="center"
+        android:text="message"
+        android:textSize="40sp" />
+    
+    <ImageView
+        android:id="@+id/qr_img"
+        android:layout_width="260px"
+        android:layout_height="260px"
+        android:layout_marginLeft="108px"
+        android:layout_marginTop="710px"
+        android:background="#00f" />
+
+</RelativeLayout>
