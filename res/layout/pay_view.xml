@@ -67,9 +67,9 @@
     <TextView
         android:id="@+id/money_pay"
         android:layout_width="180px"
-        android:layout_height="120px"
+        android:layout_height="80px"
         android:layout_marginLeft="33px"
-        android:layout_marginTop="560px"
+        android:layout_marginTop="548px"
         android:gravity="center"
         android:text="-120+"
         android:textStyle="bold"
@@ -78,7 +78,7 @@
     <TextView
         android:id="@+id/money_msg"
         android:layout_width="400px"
-        android:layout_height="260px"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="33px"
         android:layout_marginTop="720px"
         android:gravity="center"
@@ -92,5 +92,17 @@
         android:layout_marginLeft="108px"
         android:layout_marginTop="710px"
         android:background="#00f" />
+    
+    <TextView
+        android:id="@+id/money_now"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="250px"
+        android:layout_marginTop="1024px"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="0.00"
+        android:textColor="@android:color/white"
+        android:textSize="40sp" />
 
 </RelativeLayout>

@@ -41,6 +41,7 @@ public class FQueue {
 		public void run() {
 			Process.setThreadPriority(Thread.MAX_PRIORITY);
 			Thread.currentThread();
+			long curTime = System.currentTimeMillis();
 			while(true){
 				try {
 					FItemQueue item = mQueue.take();
@@ -67,6 +68,10 @@ public class FQueue {
 								break;
 							}else{
 								FLog.t("FQueue error !!!!!!!!!!!!!!!! "+item.name);
+								if(System.currentTimeMillis() - curTime > 5000){
+									curTime = System.currentTimeMillis();
+									MainActivity.showToast("µ×²ã¶ÁÈ¡³ö´í "+item.name);
+								}
 							}
 						}
 					}

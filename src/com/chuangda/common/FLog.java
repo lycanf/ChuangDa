@@ -8,6 +8,7 @@ public class FLog {
 	public static String  TAG  = "fq";
 	public static String  TAG_T  = "temp";
 	public static String  TAG_M  = "mark";
+	public static String  TAG_TH  = "thread";
 	
 	public static void v(String str){
 		if(!SHOW) return;
@@ -48,5 +49,9 @@ public class FLog {
 		FLog.v("showClassName="+clazzName2);
 	}
 	
+	public static void th(String str){
+		if(!SHOW) return;
+		Log.v(TAG_TH,str);
+	}
 	
 }

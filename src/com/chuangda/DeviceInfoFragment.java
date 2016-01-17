@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.chuangda.common.FCmd;
 import com.chuangda.common.FData;
 
 
@@ -15,7 +16,10 @@ import com.chuangda.common.FData;
 
 public class DeviceInfoFragment extends BaseFragment {
 
+	public static final int MSG_INFO = 4000;
+	
 	private TextView mDeviceInfo = null;
+	boolean isVisible = true;
 	
 	public DeviceInfoFragment() {
 	}
@@ -37,12 +41,36 @@ public class DeviceInfoFragment extends BaseFragment {
     	mDeviceInfo = (TextView) v.findViewById(R.id.text_device_info);
         return v;
     }
+    
 
+    class updateInfo extends Thread{
+    	@Override
+    	public void run() {
+    		while(isVisible()){
+    			MainActivity.gHandle(MSG_INFO);
+    			FCmd.readAll();
+    			Thread.currentThread();
+    			try {
+					Thread.sleep(2500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    	}
+    }
+    
+    @Override
+    public void onPause() {
+    	super.onPause();
+    	isVisible = false;
+    }
     @Override
     public void onResume() {
     	super.onResume();
-    	
+    	isVisible = true;
     	mDeviceInfo.setText(FData.getDeviceInfo());
+    	new updateInfo().start();
     }
     
     @Override
@@ -53,7 +81,9 @@ public class DeviceInfoFragment extends BaseFragment {
 
 	@Override
 	public void handleUI(Message msg) {
-		// TODO Auto-generated method stub
+		if(msg.what == MSG_INFO){
+			mDeviceInfo.setText(FData.getDeviceInfo());
+		}
 		
 	}
 
@@ -61,10 +91,8 @@ public class DeviceInfoFragment extends BaseFragment {
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		// TODO Auto-generated method stub
 		if(KeyEvent.ACTION_UP == event.getAction()){
-			if(FData.KEYCODE_WATER_START == event.getKeyCode()){
-				Message msg = MainActivity.gUIHandler.obtainMessage(
-						MainActivity.MSG_POP_FRAGMENT);
-				MainActivity.gUIHandler.sendMessageDelayed(msg, 10);
+			if(FData.KEYCODE_WATER_STOP == event.getKeyCode()){
+				MainActivity.gHandle(MainActivity.MSG_POP_FRAGMENT);
 			}
 		}
 		return false;

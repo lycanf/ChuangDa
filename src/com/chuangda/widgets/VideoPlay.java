@@ -64,7 +64,7 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 			String[] fileList = null; 
 			fileList = videoFile.list();
 			for(String s : fileList){
-				FLog.v("setVideoList="+FData.VIDEO_PATH+s);
+//				FLog.v("setVideoList="+FData.VIDEO_PATH+s);
 				mPlayList.add(FData.VIDEO_PATH+s);
 			}
 			if(mPlayList.size() > 0){
@@ -92,7 +92,7 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 				MainActivity.MSG_VIDEO_COUNT,ret,0);
 		MainActivity.gUIHandler.removeMessages(MainActivity.MSG_VIDEO_COUNT);
 		MainActivity.gUIHandler.sendMessage(msg);
-		FLog.v("getVideoCount="+ret);
+//		FLog.v("getVideoCount="+ret);
 		return ret;
 	}
 	
@@ -120,7 +120,7 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 			mPlayingPath = mPlayList.get(0);
 		}
 		int position = mPlayList.indexOf(mPlayingPath);
-		FLog.v("playNext position="+position+" now="+mPlayingPath);
+//		FLog.v("playNext position="+position+" now="+mPlayingPath);
 		if(position == 0){
 			setVideoList(true);
 		}
@@ -148,7 +148,7 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 		FLog.v("play error ! what="+what+" extra="+extra);
 		if(null != mPlayingPath ){
 			File delFile = new File(mPlayingPath);
-			FLog.v("delFile="+mPlayingPath);
+//			FLog.v("delFile="+mPlayingPath);
 			if(delFile.exists()){
 				delFile.delete();
 			}
@@ -161,12 +161,12 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 	@Override
 	public void onPrepared(MediaPlayer mp) {
 		// TODO Auto-generated method stub
-		FLog.v("play onPrepared getVideoWidth="+mp.getVideoWidth());
+//		FLog.v("play onPrepared getVideoWidth="+mp.getVideoWidth());
 	}
 
 	@Override
 	public void onCompletion(MediaPlayer mp) {
-		FLog.v("video onCompletion="+mPlayingPath);
+//		FLog.v("video onCompletion="+mPlayingPath);
 		rePlay();
 	}
 	

@@ -2,6 +2,7 @@ package com.chuangda.widgets;
 
 import com.chuangda.MainActivity;
 import com.chuangda.common.DataCal;
+import com.chuangda.common.FData;
 import com.chuangda.common.FLog;
 
 
@@ -21,12 +22,13 @@ public class MODBUS_ITEM {
 	
 	public static void setTDS(byte[] cmd){
 		TDS_OUT = DataCal.getFrom2Bytes(cmd[8], cmd[9]);
-		
-		if(TDS_OUT != mLastTDS_OUT){
+		MainActivity.gUIHandler.obtainMessage(
+				MainActivity.MSG_SHOW_TDS).sendToTarget();
+/*		if(TDS_OUT != mLastTDS_OUT){
 			mLastTDS_OUT = TDS_OUT;
 			MainActivity.gUIHandler.obtainMessage(
 					MainActivity.MSG_SHOW_TDS).sendToTarget();
-		}
+		}*/
 		
 	}
 	
@@ -67,6 +69,7 @@ public class MODBUS_ITEM {
 		
 		//test
 		setTDS(cmd);
+		FData.setDeviceInfo();
 	}
 
 	

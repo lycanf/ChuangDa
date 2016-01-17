@@ -34,19 +34,32 @@ public class UserViewFragment extends BaseFragment {
 	public final static String TEXT_COST = "0.0";
 	public final static String TEXT_WATER =  "0.0";
 	
+	final int color_water_normal = Color.rgb(255, 210, 0);
+	final int color_water_selected = Color.BLUE;
+	
+	final int BTN_NOW = 0;
+	final int BTN_5L = 1;
+	final int BTN_3L = 2;
+	final int BTN_PAY = 3;
+	
 //	WaterHealthBar mWaterHealthBar;
 	TextView mViewCost = null;
 	TextView mViewWater = null;
-	ITEM_BTN mButtons[] = {
-		new ITEM_BTN(R.id.user_3l, R.drawable.water0, true),
-		new ITEM_BTN(R.id.user_5l, R.drawable.water1, true),
-		new ITEM_BTN(R.id.user_charge, R.drawable.pay, true),
-		new ITEM_BTN(R.id.user_good0, R.drawable.good0, false),
-		new ITEM_BTN(R.id.user_good1, R.drawable.good1, false),
-		new ITEM_BTN(R.id.user_good2, R.drawable.good2, false),
+	ITEM_BTN mBtnWter[] = {
+		new ITEM_BTN(R.id.user_water, 0, BTN_NOW),
+		new ITEM_BTN(R.id.user_5l, R.drawable.water1,BTN_5L),
+		new ITEM_BTN(R.id.user_3l, R.drawable.water0, BTN_3L ),
+		new ITEM_BTN(R.id.user_charge, R.drawable.pay, BTN_PAY),
+
 	};
+	ITEM_BTN mBtnQuality[] = {
+		new ITEM_BTN(R.id.user_good0, R.drawable.good0, 0),
+		new ITEM_BTN(R.id.user_good1, R.drawable.good1, 1),
+		new ITEM_BTN(R.id.user_good2, R.drawable.good2, 2),
+	};
+	
 	private int mCurSelected = 0;
-	private int mCurTDS = 0;
+	private int mCurMode = 0;
 	
 	View mMainLayout = null;
 	Animation mAminAlpha = null;
@@ -55,16 +68,19 @@ public class UserViewFragment extends BaseFragment {
 	class ITEM_BTN{
 		public int id;
 		public int res;
+		public int position;
 		public Button btn;
+		public TextView text;
 		public boolean isSelected = false;
 		public boolean canAnim = false;
-		public ITEM_BTN(int i, int r, boolean anim){
-			id = i; res = r; canAnim = anim;
+		public ITEM_BTN(int i, int r, int p){
+			id = i; res = r; position = p;
 		}
 		public void setSelected(boolean s){
 			isSelected = s;
-			if(null != btn){
-//				btn.setVisibility(s ? View.VISIBLE : View.INVISIBLE);
+			if(null != text){
+//				text.setTextColor(s ? color_water_selected : color_water_normal);
+			}else if(null != btn){
 				btn.setAlpha(s ? 1 : 0);
 				if(canAnim){/*
 					if(s){
@@ -74,6 +90,7 @@ public class UserViewFragment extends BaseFragment {
 					}
 				*/}
 			}
+			
 		}
 	}
 	
@@ -125,13 +142,21 @@ public class UserViewFragment extends BaseFragment {
 /*		mViewCost.setTextColor(Color.rgb(131, 98, 192));
 		mViewWater.setTextColor(Color.rgb(55, 206, 185));*/
 		
-		for(int i=0; i < mButtons.length; i++){
-			mButtons[i].btn = (Button) mMainLayout.findViewById(mButtons[i].id);
-			mButtons[i].setSelected(false);
-			mButtons[i].btn.setTag(i);
-			mButtons[i].btn.setOnClickListener(mOnClickListener);
+		mBtnWter[BTN_NOW].text = mViewWater;
+		mBtnWter[BTN_NOW].text.setTag(BTN_NOW);
+		for(int i=BTN_5L; i < mBtnWter.length; i++){
+			mBtnWter[i].btn = (Button) mMainLayout.findViewById(mBtnWter[i].id);
+			mBtnWter[i].setSelected(false);
+			mBtnWter[i].btn.setTag(i);
+			mBtnWter[i].btn.setOnClickListener(mOnClickListener);
 		}
-		setBtnSelected(4);
+		for(int i=0; i < mBtnQuality.length; i++){
+			mBtnQuality[i].btn = (Button) mMainLayout.findViewById(mBtnQuality[i].id);
+			mBtnQuality[i].setSelected(false);
+			mBtnQuality[i].btn.setTag(i);
+			mBtnQuality[i].btn.setOnClickListener(mOnClickListener);
+		}
+		
 		mAminAlpha = AnimationUtils.loadAnimation(getActivity(), R.anim.alphaout);
 		return mMainLayout;
 	}
@@ -141,47 +166,29 @@ public class UserViewFragment extends BaseFragment {
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		resetView();
-		Message msg = MainActivity.gUIHandler.obtainMessage(
-				MSG_UPDATE_HEALTH_BAR, Color.RED, FData.WATER_QUALITY);
-		MainActivity.gUIHandler.sendMessageDelayed(msg, 100);
-		
+		if(MainActivity.isCardOn()){
+			MainActivity.setCostMoney();
+		}
+		setBtnSelected(BTN_NOW);
+//		MainActivity.gHandle(MSG_UPDATE_HEALTH_BAR,Color.RED, FData.WATER_QUALITY, null);
 	}
 	
-	public static int LINE_LEN_WATER = 3;
 	public void setBtnSelected(int position){
-		if(position < 0){
-			mCurSelected = -1;
-			for(int i=0; i < LINE_LEN_WATER; i++){
-				mButtons[i].setSelected(false);
+		for(int i=0; i<mBtnWter.length; i++){
+			if(i == position){
+				mBtnWter[i].setSelected(true);
+				mCurSelected = i;
+			}else{
+				mBtnWter[i].setSelected(false);
 			}
 		}
-		if(position == mCurSelected || position == mCurTDS){
-			FLog.e("return setBtnSelected "+mCurSelected+" mCurTDS="+mCurTDS);
-			return;
-		}
-		if(position < 0 || position >= mButtons.length){
-			FLog.e("return setBtnSelected position="+position);
-			return;
-		}
-		//select water
-		if(position < LINE_LEN_WATER){
-			mCurSelected = position;
-			for(int i=0; i < LINE_LEN_WATER; i++){
-				if(i == position){
-					mButtons[i].setSelected(true);
-				}else{
-					mButtons[i].setSelected(false);
-				}
-			}
-		}else{
-			mCurTDS = position;
-			for(int i=LINE_LEN_WATER; i < mButtons.length; i++){
-				if(i == position){
-					mButtons[i].setSelected(true);
-				}else{
-					mButtons[i].setSelected(false);
-				}
+	}
+	public void setQuality(int position){
+		for(int i=0; i<mBtnQuality.length; i++){
+			if(i == position){
+				mBtnQuality[i].setSelected(true);
+			}else{
+				mBtnQuality[i].setSelected(false);
 			}
 		}
 	}
@@ -213,22 +220,28 @@ public class UserViewFragment extends BaseFragment {
 		case MainActivity.MSG_SHOW_TDS:
 			handleTDS();
 			break;
+		case MainActivity.MSG_FORCE_STOP:
+			initView();
+			break;
+		case MainActivity.MSG_INIT_VIEW:
+			initView();
+			break;
 		}
 	}
 	
 	private void handleTDS(){
 		int tds = MODBUS_ITEM.TDS_OUT;
-		int type = 3;
+		int type = 0;
 		if(0 < tds && tds <= 120){
-			type = 3;
+			type = 0;
 		}
 		if(120 < tds && tds <= 360){
-			type = 4;
+			type = 1;
 		}
 		if(360 < tds && tds <= 500){
-			type = 5;
+			type = 2;
 		}
-		setBtnSelected(type);
+		setQuality(type);
 	}
 
 	@Override
@@ -238,14 +251,23 @@ public class UserViewFragment extends BaseFragment {
 	}
 
 	private void focusNext(boolean goToNext){
-//		FLog.t("cur="+mCurSelected+" "+goToNext);
-		if(mCurSelected >= 0 && mCurSelected < (LINE_LEN_WATER-1) && goToNext){
-			setBtnSelected(mCurSelected + 1);
-		}else if(mCurSelected > 0 && !goToNext){
-			setBtnSelected(mCurSelected - 1);
+		int next = 0;
+		if(goToNext){
+			next = (getCurSelected() + 1)%mBtnWter.length;
+			if(HandlePortData.isWaterOn() && next == BTN_PAY){
+				next = BTN_NOW;
+			}
 		}else{
-			setBtnSelected(0);
+			next = getCurSelected()-1;
+			if(next < 0){
+				next = BTN_PAY;
+			}
+			if(HandlePortData.isWaterOn() && next == BTN_PAY){
+				next = BTN_3L;
+			}
 		}
+		setBtnSelected(next);
+		mViewWater.setTextColor(next==BTN_NOW ? color_water_selected : color_water_normal);
 	}
 	
 	int testNum = 0;
@@ -257,28 +279,14 @@ public class UserViewFragment extends BaseFragment {
 			FLog.v("onclick "+position);
 			if(MainActivity.isCardOn()){
 				setBtnSelected(position);
-				clickButton(position);
 			}
 		}
 	};
-	private void clickButton(int position){
-		if(mCurSelected == 2){
-			if(HandlePortData.isWaterOn()){
-				MainActivity.gUIHandler.obtainMessage(
-						MainActivity.MSG_SHOW_TOAST,"请停水后，进行充值").sendToTarget();
-			}else{
-				MainActivity.gUIHandler.obtainMessage(MainActivity.MSG_CHANGE_FRAGMENT,
-						ViewFragment.PAY).sendToTarget();
-			}
-			return;
-		}
-		beginWater();
-	}
 	
 	private int getFlowAgain(){
 		int ret = -1;
 		int curFlow = HandlePortData.getCurFlow();
-		if(mCurSelected == 0){
+		if(getCurSelected() == BTN_3L){
 			if(WaterMgr.getWaterLevel() == WaterMgr.WATER_LEVEL_3){
 				if(HandlePortData.isWaterOn()){
 					return ret;
@@ -291,7 +299,7 @@ public class UserViewFragment extends BaseFragment {
 				ret = curFlow + WaterMgr.WATER_LEVEL_3;
 				return ret;
 			}
-		}else if(mCurSelected == 1){
+		}else if(getCurSelected() == BTN_5L){
 			if(WaterMgr.getWaterLevel() == WaterMgr.WATER_LEVEL_5){
 				if(HandlePortData.isWaterOn()){
 					return ret;
@@ -310,8 +318,8 @@ public class UserViewFragment extends BaseFragment {
 		return ret;
 	}
 	
-	private void beginWater(){
-		FLog.v("beginWater "+mCurSelected);
+	private void beginSetWater(){
+		FLog.v("beginWater "+getCurSelected());
 		int flowTotal = 0;
 		float moneyLeft = 0;
 		float moneyCur = 0;
@@ -328,15 +336,15 @@ public class UserViewFragment extends BaseFragment {
 		
 		if(isMoneyEnough){
 			if(MainActivity.setMoney(moneyLeft)){
-				if(mCurSelected == 0){
+				if(getCurSelected() == BTN_3L){
 					WaterMgr.start3L();
-				}else if(mCurSelected == 1){
+				}else if(getCurSelected() == BTN_5L){
 					WaterMgr.start5L();
 				}
 				costStr = String.format("%.2f", moneyLeft);
 				mViewCost.setText(costStr);
 			}else{
-				MainActivity.forceStop(null);
+				MainActivity.forceStop("begin water fail");
 			}
 		}else{
 			MainActivity.gUIHandler.obtainMessage(
@@ -346,15 +354,22 @@ public class UserViewFragment extends BaseFragment {
 	
 	long mKeyInteral = 0;
 	private boolean btnCanPress(){
-		boolean ret = System.currentTimeMillis() - mKeyInteral > 512;
-		ret = MainActivity.isCardOn();
+		long time = System.currentTimeMillis() - mKeyInteral;
+		boolean ret = time > 600;
+		ret = ret && MainActivity.isCardOn();
+//		FLog.v("btnCanPress "+time+" ret="+ret);
+		if(ret){
+			mKeyInteral = System.currentTimeMillis();
+		}else{
+			MainActivity.showToast("太快了，会把我按爆的-_-");
+		}
 		return ret;
 	}
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		// TODO Auto-generated method stub
 
-		if(KeyEvent.ACTION_UP == event.getAction()){
+		if(KeyEvent.ACTION_UP == event.getAction() ){
 			FLog.v("user key up "+event.getKeyCode());
 			if(FData.KEYCODE_PRE == event.getKeyCode()){
 				focusNext(false);
@@ -362,44 +377,87 @@ public class UserViewFragment extends BaseFragment {
 			if(FData.KEYCODE_NEXT == event.getKeyCode()){
 				focusNext(true);
 			}
-			if(FData.KEYCODE_ENTER == event.getKeyCode()){
-				if(btnCanPress()){
-					clickButton(mCurSelected);
+			if(FData.KEYCODE_ENTER == event.getKeyCode() && btnCanPress()){
+				if(getCurSelected() == BTN_PAY){
+					if(HandlePortData.isWaterOn()){
+						MainActivity.gUIHandler.obtainMessage(
+								MainActivity.MSG_SHOW_TOAST,"请停水后，进行充值").sendToTarget();
+					}else{
+						MainActivity.gUIHandler.obtainMessage(MainActivity.MSG_CHANGE_FRAGMENT,
+								ViewFragment.PAY).sendToTarget();
+					}
 				}
 			}
 			
-			if(FData.KEYCODE_WATER_START == event.getKeyCode()){
-				if(btnCanPress() && !HandlePortData.isWaterOn()){
-					if(WaterMgr.isWaterTimer()){
-						beginWater();
+			if(FData.KEYCODE_WATER_START == event.getKeyCode() && btnCanPress()){
+				if(HandlePortData.isWaterOn()){
+					if(getCurSelected() == BTN_3L || getCurSelected() == BTN_5L){
+						beginSetWater();
+					}else{
+						payBackMoney();
+					}
+				}else{
+					if(getCurMode() == getCurSelected()){
+						
+					}else{
+						mCurMode = getCurSelected();
+						WaterMgr.init();
+					}
+					if(isSetMode()){
+						beginSetWater();
 					}else{
 						WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_ON;
 					}
 				}
 			}
-			if(FData.KEYCODE_WATER_STOP == event.getKeyCode()){
+			if(FData.KEYCODE_WATER_STOP == event.getKeyCode() && btnCanPress()){
 				WaterMgr.WATER_STATE = WaterMgr.WATER_STATE_OFF;
 				WaterMgr.stop();
-				int curFlow = HandlePortData.getCurFlow();
-				float moneyLeft = MainActivity.getMoneyLeft(curFlow);
-				String costStr = null;
-				if(MainActivity.setMoney(moneyLeft)){
-					costStr = String.format("%.2f", moneyLeft);
-					mViewCost.setText(costStr);
+				if(!WaterMgr.isWaterTimer() || MainActivity.isConnectedCard()){
+					payBackMoney();
 				}else{
-					MainActivity.forceStop(null);
+//					WaterMgr.init();
 				}
+				
 			}
 		}
 
 		return false;
 	}
 	
-	@Override
-	public void resetView() {
+	private void payBackMoney(){
+		int curFlow = HandlePortData.getCurFlow();
+		float moneyLeft = MainActivity.getMoneyLeft(curFlow);
+		String costStr = null;
+		if(MainActivity.setMoney(moneyLeft)){
+			costStr = String.format("%.2f", moneyLeft);
+			mViewCost.setText(costStr);
+		}else{
+			MainActivity.forceStop("stop water fail");
+		}
+	}
+	
+	private boolean isSetMode(){
+		return getCurSelected() == BTN_3L || getCurSelected() == BTN_5L;
+	}
+	
+	private int getCurSelected(){
+		return mCurSelected;
+	}
+	
+	private int getCurMode(){
+		return mCurMode;
+	}
+	
+	private void initView(){
 		mViewCost.setText(TEXT_COST);
 		mViewWater.setText(TEXT_WATER);
-		setBtnSelected(-1);
+		mViewWater.setTextColor(color_water_normal);
+		setBtnSelected(BTN_NOW);
+	}
+	@Override
+	public void resetView() {
+
 	}
 
 	@Override
@@ -411,7 +469,7 @@ public class UserViewFragment extends BaseFragment {
 	@Override
 	public void onCardOff() {
 		// TODO Auto-generated method stub
-		
+		initView();
 	}
 
 	@Override

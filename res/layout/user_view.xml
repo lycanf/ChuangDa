@@ -26,7 +26,7 @@
         android:id="@+id/user_3l"
         android:layout_width="120px"
         android:layout_height="120px"
-        android:layout_marginLeft="40px"
+        android:layout_marginLeft="188px"
         android:layout_marginTop="@dimen/user_margin_top_volume"
         android:background="@drawable/water0"
         android:focusable="false" />
@@ -35,7 +35,7 @@
         android:id="@+id/user_5l"
         android:layout_width="120px"
         android:layout_height="120px"
-        android:layout_marginLeft="188px"
+        android:layout_marginLeft="40px"
         android:layout_marginTop="@dimen/user_margin_top_volume"
         android:background="@drawable/water1"
         android:focusable="false" />

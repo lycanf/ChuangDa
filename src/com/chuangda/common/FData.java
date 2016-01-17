@@ -1,5 +1,7 @@
 package com.chuangda.common;
 
+import com.chuangda.widgets.MODBUS_ITEM;
+
 import android.graphics.Color;
 import android.view.KeyEvent;
 
@@ -44,6 +46,13 @@ public class FData {
 	}
 	
 	// Device Info
+	public static void setDeviceInfo(){
+		device_info = "TDS : "+MODBUS_ITEM.TDS_OUT
+				+"\n累积流量 : "+MODBUS_ITEM.FLOW
+				+"\n供电电压 : "+MODBUS_ITEM.VOLTAGE
+				+"\n累积脉冲 : "+MODBUS_ITEM.PULSE
+				+"\n每升脉冲 : "+MODBUS_ITEM.PULSE_L;
+	}
 	public static void setDeviceInfo(String data){
 		device_info = data;
 	}

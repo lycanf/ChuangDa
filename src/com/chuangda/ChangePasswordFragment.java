@@ -108,9 +108,7 @@ public class ChangePasswordFragment extends BaseFragment {
 	}
 	
 	private void goBack(){
-		Message msg = MainActivity.gUIHandler.obtainMessage(
-				MainActivity.MSG_POP_FRAGMENT);
-		MainActivity.gUIHandler.sendMessageDelayed(msg, 10);
+		MainActivity.gHandle(MainActivity.MSG_POP_FRAGMENT);
 	}
 
 	@Override

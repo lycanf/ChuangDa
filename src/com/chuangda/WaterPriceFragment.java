@@ -88,10 +88,8 @@ public class WaterPriceFragment extends BaseFragment {
 		}
 		
 		if(KeyEvent.ACTION_UP == event.getAction()){
-			if(FData.KEYCODE_WATER_START == event.getKeyCode()){
-				Message msg = MainActivity.gUIHandler.obtainMessage(
-						MainActivity.MSG_POP_FRAGMENT);
-				MainActivity.gUIHandler.sendMessageDelayed(msg, 10);
+			if(FData.KEYCODE_WATER_STOP == event.getKeyCode()){
+				MainActivity.gHandle(MainActivity.MSG_POP_FRAGMENT);
 			}
 		}
 		return false;
