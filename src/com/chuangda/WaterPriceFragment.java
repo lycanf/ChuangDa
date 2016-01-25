@@ -44,7 +44,7 @@ public class WaterPriceFragment extends BaseFragment {
     	super.onResume();
     	
     	float data = getData();
-    	mWaterPrice.setText(new DecimalFormat("##.00").format(data));
+    	mWaterPrice.setText(new DecimalFormat("###0.00").format(data));
     	
     }
 	
@@ -62,7 +62,7 @@ public class WaterPriceFragment extends BaseFragment {
 	
 	public void setData(float data){
 		FData.setWaterPrice(data);
-		mWaterPrice.setText(new DecimalFormat("##.00").format(data));
+		mWaterPrice.setText(new DecimalFormat("###0.00").format(data));
 	}
 	
 	public float getData(){

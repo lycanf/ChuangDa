@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.chuangda.MainActivity.ViewFragment;
@@ -29,13 +31,15 @@ import com.chuangda.widgets.MODBUS_ITEM;
 public class UserViewFragment extends BaseFragment {
 
 	public final static int MSG_UPDATE_HEALTH_BAR = 1000;
+	public final static int MSG_WATER_FLOW_COLOR = 1001;
+	public final static int MSG_UPDATE_BID = 1002;
 
 	public final static String TEXT_DEFAULT = "888888888";
 	public final static String TEXT_COST = "0.0";
 	public final static String TEXT_WATER =  "0.0";
 	
 	final int color_water_normal = Color.rgb(255, 210, 0);
-	final int color_water_selected = Color.BLUE;
+	final int color_water_selected = Color.rgb(12, 177, 230);
 	
 	final int BTN_NOW = 0;
 	final int BTN_5L = 1;
@@ -57,12 +61,22 @@ public class UserViewFragment extends BaseFragment {
 		new ITEM_BTN(R.id.user_good1, R.drawable.good1, 1),
 		new ITEM_BTN(R.id.user_good2, R.drawable.good2, 2),
 	};
+	ITEM_BTN mImgBid[] = {
+		new ITEM_BTN(R.id.user_bid0),
+		new ITEM_BTN(R.id.user_bid1),
+		new ITEM_BTN(R.id.user_bid2),
+		new ITEM_BTN(R.id.user_bid3)
+	};
+	private TextView mTextTDS = null;
 	
 	private int mCurSelected = 0;
 	private int mCurMode = 0;
+	private float mCurFlow = 0;
+	private int[] mBidHeigh = {838,900,960,838};
 	
 	View mMainLayout = null;
-	Animation mAminAlpha = null;
+	Animation mAminAlphaFlow = null;
+	Animation mAminAlphaBid = null;
 	
 
 	class ITEM_BTN{
@@ -71,15 +85,19 @@ public class UserViewFragment extends BaseFragment {
 		public int position;
 		public Button btn;
 		public TextView text;
+		public ImageView img;
 		public boolean isSelected = false;
 		public boolean canAnim = false;
 		public ITEM_BTN(int i, int r, int p){
 			id = i; res = r; position = p;
 		}
+		public ITEM_BTN(int i){
+			id = i;
+		}
 		public void setSelected(boolean s){
 			isSelected = s;
 			if(null != text){
-//				text.setTextColor(s ? color_water_selected : color_water_normal);
+//				text.setAlpha(s ? 1 : 0);
 			}else if(null != btn){
 				btn.setAlpha(s ? 1 : 0);
 				if(canAnim){/*
@@ -126,6 +144,10 @@ public class UserViewFragment extends BaseFragment {
 		mViewCost = (TextView) mMainLayout.findViewById(R.id.user_cost);
 		mViewWater = (TextView) mMainLayout.findViewById(R.id.user_water);
 		
+		//init
+		mAminAlphaFlow = AnimationUtils.loadAnimation(getActivity(), R.anim.alphaout);
+		mAminAlphaBid = AnimationUtils.loadAnimation(getActivity(), R.anim.alpha1);
+		
 		AssetManager assets = getActivity().getAssets();
 		final Typeface font = Typeface.createFromAsset(assets, "fonts/digital-7.ttf");
 		
@@ -151,17 +173,23 @@ public class UserViewFragment extends BaseFragment {
 			mBtnWter[i].btn.setOnClickListener(mOnClickListener);
 		}
 		for(int i=0; i < mBtnQuality.length; i++){
-			mBtnQuality[i].btn = (Button) mMainLayout.findViewById(mBtnQuality[i].id);
+			mBtnQuality[i].text = (TextView) mMainLayout.findViewById(mBtnQuality[i].id);
 			mBtnQuality[i].setSelected(false);
-			mBtnQuality[i].btn.setTag(i);
-			mBtnQuality[i].btn.setOnClickListener(mOnClickListener);
+			mBtnQuality[i].text.setTag(i);
+			mBtnQuality[i].text.setVisibility(View.GONE);
+//			mBtnQuality[i].btn.setOnClickListener(mOnClickListener);
 		}
-		
-		mAminAlpha = AnimationUtils.loadAnimation(getActivity(), R.anim.alphaout);
+		for(int i=0; i<mImgBid.length; i++){
+			mImgBid[i].img = (ImageView) mMainLayout.findViewById(mImgBid[i].id);
+		}
+		mTextTDS = (TextView) mMainLayout.findViewById(R.id.user_tds);
 		return mMainLayout;
 	}
 	
-	
+	@Override
+	public void onPause() {
+		super.onPause();
+	}
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
@@ -170,7 +198,8 @@ public class UserViewFragment extends BaseFragment {
 			MainActivity.setCostMoney();
 		}
 		setBtnSelected(BTN_NOW);
-//		MainActivity.gHandle(MSG_UPDATE_HEALTH_BAR,Color.RED, FData.WATER_QUALITY, null);
+		handleTDS();
+		handleBid();
 	}
 	
 	public void setBtnSelected(int position){
@@ -183,10 +212,10 @@ public class UserViewFragment extends BaseFragment {
 			}
 		}
 	}
-	public void setQuality(int position){
+	private void setQuality(int position){
 		for(int i=0; i<mBtnQuality.length; i++){
 			if(i == position){
-				mBtnQuality[i].setSelected(true);
+				mBtnQuality[i].setSelected(true);//
 			}else{
 				mBtnQuality[i].setSelected(false);
 			}
@@ -209,6 +238,10 @@ public class UserViewFragment extends BaseFragment {
 			FLog.v("cost="+cost+" flow="+flow);
 			mViewCost.setText(cost);
 			mViewWater.setText(flow);
+			if(mCurFlow != value[1]){
+				useAnimation(false);
+				mCurFlow = value[1];
+			}
 /*			mViewCost.setText(String.valueOf(value[0]));
 			mViewWater.setText(String.valueOf(value[1]));*/
 			break;
@@ -226,12 +259,33 @@ public class UserViewFragment extends BaseFragment {
 		case MainActivity.MSG_INIT_VIEW:
 			initView();
 			break;
+		case MSG_WATER_FLOW_COLOR:
+			if(MainActivity.isCardOn()){
+				useAnimation(msg.arg1>0);
+			}
+			break;
+		case MODBUS_ITEM.MSG_MODBUS_INFO:
+			handleTDS();
+			break;
+		case MSG_UPDATE_BID:
+			handleBid();
+			break;
+		}
+	}
+	
+	private void useAnimation(boolean use){
+		if(use){
+			mViewWater.startAnimation(mAminAlphaFlow);
+		}else{
+			mViewWater.clearAnimation();
+			mViewWater.setTextColor(color_water_normal);
+			mViewWater.setVisibility(View.VISIBLE);
 		}
 	}
 	
 	private void handleTDS(){
 		int tds = MODBUS_ITEM.TDS_OUT;
-		int type = 0;
+		/*int type = 0;
 		if(0 < tds && tds <= 120){
 			type = 0;
 		}
@@ -241,7 +295,45 @@ public class UserViewFragment extends BaseFragment {
 		if(360 < tds && tds <= 500){
 			type = 2;
 		}
-		setQuality(type);
+		setQuality(type);*/
+		
+		String tdsStr = String.valueOf(MODBUS_ITEM.TDS_OUT);
+		if(tds > 1000){
+			tdsStr = "";
+		}
+		mTextTDS.setText("TDS: "+tdsStr);
+	}
+	
+	private void handleBid(){
+		//838-1014
+		/*long time = System.currentTimeMillis();
+		int p = (int) (time%4);
+		int h = (int) (time%(1014-868));
+		mBidHeigh[p] = 868+h;*/
+		//ro
+		RelativeLayout.LayoutParams pm = new RelativeLayout.LayoutParams(48,27);
+		pm.topMargin = mBidHeigh[0];
+		pm.leftMargin = 118;
+		mImgBid[0].img.setLayoutParams(pm);
+		//ppf
+		pm = new RelativeLayout.LayoutParams(48,27);
+		pm.topMargin = mBidHeigh[1];
+		pm.leftMargin = 200;
+		mImgBid[1].img.setLayoutParams(pm);
+		//cto
+		pm = new RelativeLayout.LayoutParams(48,27);
+		pm.topMargin = mBidHeigh[2];
+		pm.leftMargin = 280;
+		mImgBid[2].img.setLayoutParams(pm);
+		//udf
+		pm = new RelativeLayout.LayoutParams(48,27);
+		pm.topMargin = mBidHeigh[3];
+		pm.leftMargin = 358;
+		mImgBid[3].img.setLayoutParams(pm);
+		
+		for(int i=0; i<mImgBid.length; i++){
+			mImgBid[i].img.startAnimation(mAminAlphaBid);
+		}
 	}
 
 	@Override
@@ -267,7 +359,7 @@ public class UserViewFragment extends BaseFragment {
 			}
 		}
 		setBtnSelected(next);
-		mViewWater.setTextColor(next==BTN_NOW ? color_water_selected : color_water_normal);
+		useAnimation(next==BTN_NOW);
 	}
 	
 	int testNum = 0;
@@ -372,10 +464,10 @@ public class UserViewFragment extends BaseFragment {
 		if(KeyEvent.ACTION_UP == event.getAction() ){
 			FLog.v("user key up "+event.getKeyCode());
 			if(FData.KEYCODE_PRE == event.getKeyCode()){
-				focusNext(false);
+				focusNext(true);
 			}
 			if(FData.KEYCODE_NEXT == event.getKeyCode()){
-				focusNext(true);
+				focusNext(false);
 			}
 			if(FData.KEYCODE_ENTER == event.getKeyCode() && btnCanPress()){
 				if(getCurSelected() == BTN_PAY){
@@ -450,6 +542,7 @@ public class UserViewFragment extends BaseFragment {
 	}
 	
 	private void initView(){
+		FLog.v("userFragment initView");
 		mViewCost.setText(TEXT_COST);
 		mViewWater.setText(TEXT_WATER);
 		mViewWater.setTextColor(color_water_normal);
@@ -463,13 +556,16 @@ public class UserViewFragment extends BaseFragment {
 	@Override
 	public void onCardOn() {
 		// TODO Auto-generated method stub
-		
+		FLog.v("userFragment onCardOn");
+//		mViewWater.setTextColor(color_water_selected);
+		useAnimation(true);
 	}
 
 	@Override
 	public void onCardOff() {
-		// TODO Auto-generated method stub
+		FLog.v("userFragment onCardOff");
 		initView();
+		useAnimation(false);
 	}
 
 	@Override

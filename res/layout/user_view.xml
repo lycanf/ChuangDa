@@ -49,31 +49,78 @@
         android:background="@drawable/pay"
         android:focusable="false" />
     
-        <Button
+        <TextView
         android:id="@+id/user_good0"
-        android:layout_width="133px"
-        android:layout_height="133px"
-        android:layout_marginLeft="31px"
-        android:layout_marginTop="@dimen/user_margin_top_quality"
-        android:background="@drawable/good0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="24dp"
+        android:textColor="@android:color/white"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="406px"
+        android:text="很好"
+        android:layout_marginTop="840px"
         android:focusable="false" />
 
-    <Button
+    <TextView
         android:id="@+id/user_good1"
-        android:layout_width="133px"
-        android:layout_height="133px"
-        android:layout_marginLeft="182px"
-        android:layout_marginTop="@dimen/user_margin_top_quality"
-        android:background="@drawable/good1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="24dp"
+        android:textColor="@android:color/white"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="406px"
+        android:text="好"
+        android:layout_marginTop="900px"
         android:focusable="false" />
 
-    <Button
+    <TextView
         android:id="@+id/user_good2"
-        android:layout_width="133px"
-        android:layout_height="133px"
-        android:layout_marginLeft="328px"
-        android:layout_marginTop="@dimen/user_margin_top_quality"
-        android:background="@drawable/good2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="24dp"
+        android:textColor="@android:color/white"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="406px"
+        android:text="一般"
+        android:layout_marginTop="960px"
         android:focusable="false" />
+    
+    <TextView
+        android:id="@+id/user_tds"
+        android:layout_width="wrap_content"
+        android:layout_height="133px"
+        android:layout_marginLeft="394px"
+        android:layout_marginTop="802px"
+        android:textColor="@android:color/white"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:text="1234" />
+    
+    <ImageView
+        android:id="@+id/user_bid0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bid" />
+
+    <ImageView
+        android:id="@+id/user_bid1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bid" />
+
+    <ImageView
+        android:id="@+id/user_bid2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bid" />
+
+    <ImageView
+        android:id="@+id/user_bid3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bid" />
 
 </RelativeLayout>

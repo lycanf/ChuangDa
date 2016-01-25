@@ -4,19 +4,20 @@
     android:layout_height="match_parent"
     android:background="#ffffff" >
 
-    <LinearLayout
+    <com.chuangda.widgets.FLinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:id="@+id/device_info_list"
+        android:layout_marginLeft="60px"
         android:orientation="vertical" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="40sp"
-            android:gravity="left"
-            android:textColor="@android:color/holo_orange_dark"
-            android:id="@+id/text_device_info" />
-    </LinearLayout>
+    </com.chuangda.widgets.FLinearLayout>
+    
+    <ImageView 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher"
+        android:id="@+id/device_info_arrow"
+        android:visibility="invisible"/>
 
 </RelativeLayout>

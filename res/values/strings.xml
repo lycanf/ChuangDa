@@ -17,6 +17,7 @@
     <string name="msg_use_admin_card">请使用管理员卡</string>
     <string name="msg_update_password">是否更新密码</string>
     <string name="msg_modify_password">修改密码</string>
+    <string name="msg_regist">注册</string>
     <string name="msg_calibrate_flow">校正流量</string>
     <string name="msg_water_price">水费</string>
     <string name="msg_device_info">设备信息</string>

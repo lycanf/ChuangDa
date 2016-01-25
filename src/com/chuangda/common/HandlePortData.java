@@ -23,6 +23,9 @@ class CMD_ITEM{
 }
 
 public class HandlePortData {
+	public static long WATER_FLOW_TIME = 0;
+	public static long WATER_FLOW_TIME_ONCE = 0;
+	
 	public static byte[] DATA_CMD_HEAD = new byte[8] ;
 	public static int 		mCmdLine = -1;
 	public static int mCurCmdNum = 0;
@@ -30,6 +33,7 @@ public class HandlePortData {
 	public static int mFlowPre = 0;
 	public static boolean mRecognizeCmd = true;
 	private static boolean WATER_ON = false;
+	
 	
 	private static boolean isAnswer = false;
 	
@@ -186,6 +190,7 @@ public class HandlePortData {
 		if(item.crcRight){
 			FLog.t("parseCmdWaterOn success ");
 			WATER_ON = true;
+			WATER_FLOW_TIME_ONCE = System.currentTimeMillis();
 		}
 		if(item.readEnd){
 			parseCmdEnd(item);
@@ -197,6 +202,11 @@ public class HandlePortData {
 		if(item.crcRight){
 			FLog.t("parseCmdWaterOff success ");
 			WATER_ON = false;
+			WATER_FLOW_TIME += (System.currentTimeMillis() - WATER_FLOW_TIME_ONCE);
+			
+			long totalFlow = DataNative.getTotalFlow();
+			totalFlow += getCurFlow();
+			DataNative.setTotalFlow(totalFlow);
 		}
 		if(item.readEnd){
 			parseCmdEnd(item);

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.chuangda.common.FCmd;
 import com.chuangda.common.FData;
 import com.chuangda.common.FLog;
 
@@ -20,6 +21,7 @@ import com.chuangda.common.FLog;
 public class ModifyFlowFragment extends BaseFragment {
 
 	private TextView mFlowData = null;
+	private int mFlowValue ;
 	
 	public ModifyFlowFragment() {
 	}
@@ -46,7 +48,8 @@ public class ModifyFlowFragment extends BaseFragment {
     @Override
     public void onResume() {
     	super.onResume();
-    	mFlowData.setText(String.valueOf(getData()));
+    	mFlowValue = getData();
+    	mFlowData.setText(String.valueOf(mFlowValue));
     }
     
     @Override
@@ -65,7 +68,7 @@ public class ModifyFlowFragment extends BaseFragment {
 
 	public void setData(int data){
 		FData.setFlowData(data);
-		
+//		FCmd.readAll();
 	}
 	
 	public int getData(){
@@ -77,20 +80,25 @@ public class ModifyFlowFragment extends BaseFragment {
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		if(KeyEvent.ACTION_DOWN == event.getAction()){
-			int data = getData();
 			if(FData.KEYCODE_PRE == event.getKeyCode()){
-				++data;
-				setData(data);
+				++mFlowValue;
+				mFlowData.setText(String.valueOf(mFlowValue));
 			}
 			if(FData.KEYCODE_NEXT == event.getKeyCode()){
-				--data;
-				setData(data);
+				--mFlowValue;
+				mFlowData.setText(String.valueOf(mFlowValue));
 			}
 		}
 		
 		if(KeyEvent.ACTION_UP == event.getAction()){
 			if(FData.KEYCODE_WATER_STOP == event.getKeyCode()){
 				MainActivity.gHandle(MainActivity.MSG_POP_FRAGMENT);
+			}
+			if(FData.KEYCODE_PRE == event.getKeyCode()){
+				setData(mFlowValue);
+			}
+			if(FData.KEYCODE_NEXT == event.getKeyCode()){
+				setData(mFlowValue);
 			}
 		}
 		return false;

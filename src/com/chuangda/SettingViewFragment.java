@@ -32,6 +32,7 @@ public class SettingViewFragment extends BaseFragment {
 		new SettingItem(R.string.msg_calibrate_flow,ViewFragment.CALIBRATE_FLOW),
 		new SettingItem(R.string.msg_water_price,ViewFragment.WATER_PRICE),
 		new SettingItem(R.string.msg_modify_password,ViewFragment.CHANGE_PASSWD),
+		new SettingItem(R.string.msg_regist,ViewFragment.REGIST),
 	};
 	
 	private int mCurSelected = 0;

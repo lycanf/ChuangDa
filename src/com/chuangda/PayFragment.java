@@ -186,6 +186,7 @@ public class PayFragment extends BaseFragment {
     	// TODO Auto-generated method stub
     	super.onDestroy();
     	isDestroy = true;
+    	MainActivity.gHandle(UserViewFragment.MSG_WATER_FLOW_COLOR, 1, 0, null);
     }
 
 	@Override
@@ -266,17 +267,17 @@ public class PayFragment extends BaseFragment {
 		}
 		if(KeyEvent.ACTION_UP == event.getAction()){
 			if(FData.KEYCODE_PRE == event.getKeyCode()){
-				focusNext(false);
+				focusNext(true);
 			}
 			if(FData.KEYCODE_NEXT == event.getKeyCode()){
-				focusNext(true);
+				focusNext(false);
 			}
 			if(FData.KEYCODE_ENTER == event.getKeyCode()){
 				doSelected();
 			}
 			if(FData.KEYCODE_WATER_STOP == event.getKeyCode()){
 				if(mCurSelected == 6){
-					mCurSelected = 5;
+					mCurSelected = 2;
 					setSelected();
 				}else{
 					MainActivity.gUIHandler.obtainMessage(MainActivity.MSG_POP_FRAGMENT).sendToTarget();
@@ -288,10 +289,10 @@ public class PayFragment extends BaseFragment {
 		if(KeyEvent.ACTION_DOWN == event.getAction() && mCurSelected == 6){
 			int customMoney = mItemMoneys[6].money;
 			if(FData.KEYCODE_PRE == event.getKeyCode()){
-				customMoney--;
+				customMoney++;
 			}
 			if(FData.KEYCODE_NEXT == event.getKeyCode()){
-				customMoney++;
+				customMoney--;
 			}
 			mItemMoneys[6].money = customMoney;
 			String moneyStr = "-"+customMoney+"+";
@@ -371,7 +372,7 @@ public class PayFragment extends BaseFragment {
 	@Override
 	public void resetView() {
 		// TODO Auto-generated method stub
-		mCurSelected = 0;
+		mCurSelected = 2;
 		setSelected();
 		updateMoney();
 	}

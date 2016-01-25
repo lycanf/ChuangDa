@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
@@ -78,9 +79,7 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 	}
 	
 	private void rePlay(){
-		Message msg = MainActivity.gUIHandler.obtainMessage(
-				MainActivity.MSG_PLAY_NEXT);
-		MainActivity.gUIHandler.sendMessageDelayed(msg, 10);
+		MainActivity.gHandle(MainActivity.MSG_PLAY_NEXT);
 	}
 	
 	public int getVideoCount(){
@@ -168,6 +167,19 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 	public void onCompletion(MediaPlayer mp) {
 //		FLog.v("video onCompletion="+mPlayingPath);
 		rePlay();
+	}
+	
+	@Override
+	protected void onWindowVisibilityChanged(int visibility) {
+		// TODO Auto-generated method stub
+		super.onWindowVisibilityChanged(visibility);
+		FLog.v("onWindowVisibilityChanged "+visibility);
+		if(View.VISIBLE == visibility){
+//			setVideoList(true);
+			playNext();
+		}else{
+			stopPlayback();
+		}
 	}
 	
 }

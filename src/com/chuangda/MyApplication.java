@@ -27,6 +27,7 @@ import android.widget.Toast;
 import android_serialport_api.SerialPort;
 import android_serialport_api.SerialPortFinder;
 
+import com.chuangda.common.FFile;
 import com.chuangda.common.FLog;
 
 public class MyApplication extends android.app.Application implements UncaughtExceptionHandler{
@@ -43,7 +44,7 @@ public class MyApplication extends android.app.Application implements UncaughtEx
 		super.onCreate();
 		FLog.v("MyApplication onCreate");
 		instance = this;
-//		Thread.setDefaultUncaughtExceptionHandler(this);
+		Thread.setDefaultUncaughtExceptionHandler(this);
 	}
 	
 	public SerialPort getSerialPort() throws SecurityException, IOException, InvalidParameterException {
@@ -72,6 +73,7 @@ public class MyApplication extends android.app.Application implements UncaughtEx
 	@Override
 	public void uncaughtException(Thread thread, Throwable ex) {
 		// TODO Auto-generated method stub
+		FFile.record(ex.toString());
 		FLog.v( "uncaughtException, thread: " + thread
                 + " name: " + thread.getName() + " id: " + thread.getId() + "exception: "
                 + ex);

@@ -8,6 +8,9 @@ public class FConst {
 	public static final int CMD_WATER_ON = 255;
 	public static final int CMD_WATER_OFF = 0;
 	
+	public static long INTERVAL_MAINTAIN = 1000*60*60*24;
+	public static long LATEST_MAINTAIN = 0;
+	
 	//modbus command
 	public final static byte[] CMD_READ_FLOW 	= {(byte)0x01, (byte)0x03 ,(byte)0x00 , (byte)0x00 , (byte)0x00 , (byte)0x03 , (byte)0x05 , (byte)0xCB};
 	public final static byte[] CMD_READ_ALL 	= {(byte)0x01, (byte)0x03 ,(byte)0x00 , (byte)0x00 , (byte)0x00 , (byte)0x14 , (byte)0x45 , (byte)0xC5};

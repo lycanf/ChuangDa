@@ -15,7 +15,7 @@ public class FData {
 	public static final int KEYCODE_WATER_STOP = 4;
 	
 	public final static int COLOR_FOCUSED = Color.RED;
-	public final static int COLOR_UNFOCUSED = Color.GRAY;
+	public final static int COLOR_UNFOCUSED = Color.LTGRAY;
 	
 	public final static String VIDEO_PATH = "/mnt/sdcard/cdhkmedia/";
 	

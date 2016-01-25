@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.chuangda"
     android:versionCode="1"
+    android:installLocation="internalOnly"
     android:versionName="1.0" >
 
     <uses-sdk
@@ -22,7 +23,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RAISED_THREAD_PRIORITY" />
-
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> 
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	
     <uses-feature
         android:name="android.hardware.nfc"
         android:required="true" />
@@ -68,10 +71,12 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.chuangda.MyReceiver" >
+        <receiver android:name=".MyReceiver"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED" >
             <intent-filter>
-                <action android:name="android.intent.action.BATTERY_LOW" >
-                </action>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+                <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
     </application>

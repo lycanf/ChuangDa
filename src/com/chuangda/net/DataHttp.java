@@ -192,7 +192,7 @@ public class DataHttp {
                 result += line;
             }
         } catch (Exception e) {
-            FLog.v("发送 POST 请求出现异常！"+e);
+            FLog.v("sendHttpPost error:"+e.getMessage());
             e.printStackTrace();
         }
         //使用finally块来关闭输出流、输入流

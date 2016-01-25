@@ -7,6 +7,7 @@ import com.chuangda.common.FLog;
 
 
 public class MODBUS_ITEM {
+	public static final int MSG_MODBUS_INFO = 5001;
 	
 	public static int FLOW = 0;
 	public static int TDS_OUT = 0;
@@ -22,12 +23,10 @@ public class MODBUS_ITEM {
 	
 	public static void setTDS(byte[] cmd){
 		TDS_OUT = DataCal.getFrom2Bytes(cmd[8], cmd[9]);
-		MainActivity.gUIHandler.obtainMessage(
-				MainActivity.MSG_SHOW_TDS).sendToTarget();
+		MainActivity.gHandle(MainActivity.MSG_SHOW_TDS);
 /*		if(TDS_OUT != mLastTDS_OUT){
 			mLastTDS_OUT = TDS_OUT;
-			MainActivity.gUIHandler.obtainMessage(
-					MainActivity.MSG_SHOW_TDS).sendToTarget();
+			MainActivity.gHandle(MainActivity.MSG_SHOW_TDS);
 		}*/
 		
 	}
@@ -64,12 +63,10 @@ public class MODBUS_ITEM {
 			FLOW =  DataCal.getFrom2Bits(high,low);
 		}
 		String str = "\n\rTDS_OUT="+TDS_OUT+"\n\rVOLTAGE="+VOLTAGE+"\n\rPULSE="+PULSE+"\n\rPULSE_L="+PULSE_L+"\n\rFLOW="+FLOW;
-		MainActivity.gUIHandler.obtainMessage(
-				MainActivity.MSG_TEST_TEXT, str).sendToTarget();
+//		MainActivity.gHandle(MainActivity.MSG_TEST_TEXT, str);
 		
-		//test
-		setTDS(cmd);
 		FData.setDeviceInfo();
+		MainActivity.gHandle(MSG_MODBUS_INFO);
 	}
 
 	

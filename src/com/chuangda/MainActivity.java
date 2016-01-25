@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager.WakeLock;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -31,6 +32,7 @@ import com.chuangda.common.FConst;
 import com.chuangda.common.FData;
 import com.chuangda.common.FLog;
 import com.chuangda.common.HandlePortData;
+import com.chuangda.common.SysInfo;
 import com.chuangda.common.ToolClass;
 import com.chuangda.common.WaterMgr;
 import com.chuangda.data.FItemCard;
@@ -89,6 +91,9 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	private static final ReentrantLock mLock = new ReentrantLock();  
 
 
+	public static long INTERVAL_CHECK_ALL = 1000*60;
+	public static long INTERVAL_RECORD = 1000*60;
+	
 	public static String SEED = "cdhk";
 	public static double envalue_MIN = 0;
 	public static double envale_MAX = 10000;
@@ -102,7 +107,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	public static FItemCard  CardCur = new FItemCard();
 	
 	enum ViewFragment {
-		USER, SETTING,CHANGE_PASSWD,CALIBRATE_FLOW,WATER_PRICE,DEVICE_INFO,PAY
+		USER, SETTING,CHANGE_PASSWD,CALIBRATE_FLOW,WATER_PRICE,DEVICE_INFO,PAY,REGIST
 	}
 
 
@@ -118,6 +123,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
         getWindow().setAttributes(params);
         
         mTestText = (TextView) findViewById(R.id.main_test_text);
+        mTestText.setVisibility(View.GONE);
         
 		mVideoText = (TextView) findViewById(R.id.main_video_text);
 		mVideoText.setText(TEXT_NO_VIDEO);
@@ -151,6 +157,8 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 					getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 		}
 		
+		SysInfo.getLocalMacAddress(this);
+		
 		startTDSCheck();
 		new Record().start();
 	}
@@ -169,10 +177,18 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 			FLog.v("CheckAll start");
 			while(!isCardOn()){
 				Thread.currentThread();
+				long curTime = System.currentTimeMillis();
+				if(TextUtils.isEmpty(FUser.MAC_ADDR)){
+					SysInfo.getLocalMacAddress(MainActivity.this);
+				}
+				if((curTime-FConst.LATEST_MAINTAIN) > FConst.INTERVAL_MAINTAIN){
+					FUser.sendDeviceMaintain();
+					FConst.LATEST_MAINTAIN = curTime;
+				}
 				try {
 					gUIHandler.obtainMessage(MSG_INIT_VIEW).sendToTarget();
 					FCmd.readAll();
-					Thread.sleep(5000);
+					Thread.sleep(INTERVAL_CHECK_ALL);
 					mCheckTDSTime = System.currentTimeMillis();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -188,10 +204,9 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 			while(true){
 				Thread.currentThread();
 				try {
-					Thread.sleep(1000*30);
 					mCheckRecordTime = System.currentTimeMillis();
 					FUser.sendDeviceState();
-					FUser.sendDeviceMaintain();
+					Thread.sleep(INTERVAL_RECORD);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -203,11 +218,16 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		@Override
 		public void run() {
 			String ret = null;
-			String total = null,  amount = null,  balance = null;
-			total = String.format("%.2f", HandlePortData.getCurFlow()/ (float) 1000);
-			amount = String.format("%.2f", (mUserMoneyBase-getMoney()));
-			balance = String.format("%.2f", getMoney());
-			ret = DataHttp.sendHttpPost(FUser.urlDeviceConsume,FUser.getDeviceConsume(total, amount, balance));
+			String  amount = null,  balance = null;
+			long totalFlow = HandlePortData.getCurFlow();
+			
+//			total = String.format("%.2f", totalFlow);
+			amount = String.format("%.2f", (mUserMoneyBase-UserMoneyCur));
+			balance = String.format("%.2f", UserMoneyCur);
+			if(HandlePortData.isWaterOn()){
+				HandlePortData.WATER_FLOW_TIME += System.currentTimeMillis()-HandlePortData.WATER_FLOW_TIME_ONCE;
+			}
+			ret = DataHttp.sendHttpPost(FUser.urlDeviceConsume,FUser.getDeviceConsume(totalFlow, amount, balance,HandlePortData.WATER_FLOW_TIME));
 			FLog.v("sendDeviceConsume ="+ret);
 		}
 	}
@@ -348,6 +368,9 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		if(!isCardOn()){
 			return;
 		}
+		if(!IS_ADMIN){
+			new SendConsume().start();
+		}
 		mCardOn = false;
 		IS_ADMIN = false;
 		clearData();
@@ -355,7 +378,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		mUIHandler.obtainMessage(MSG_CARD_OFF).sendToTarget();
 		startTDSCheck();
 		WaterMgr.init();
-		new SendConsume().start();
 	}
 	
 	public static boolean isCardOn(){
@@ -376,7 +398,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		boolean bSet = setMoney(cost);
 		if(bSet){
 			float[] waterPrice = {cost,flow/(float)1000};
-			gUIHandler.obtainMessage(MSG_SHOW_WATER_PRICE, waterPrice).sendToTarget();
+			gUIHandler.obtainMessage(MSG_SHOW_WATER_PRICE,0,0, waterPrice).sendToTarget();
 			return waterPrice;
 		}
 		return null;
@@ -395,7 +417,6 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	public void clearData(){
 		FCmd.clearCmd(); //should use in main thread ?
 		HandlePortData.clear();
-		mUserMoneyBase = (double) 0;
 	}
 	
 	public static boolean IS_ADMIN = false;
@@ -438,8 +459,11 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		boolean auth = false;
 		boolean auth0 = false;
 		IS_ADMIN = false;
+		UserMoneyCur = 0;
+		mUserMoneyBase = 0;
+		HandlePortData.WATER_FLOW_TIME = 0;
 		
-//		setMoney(0.4);
+//		setMoney(500);
 		try {
 			mMC.close();
 			mMC.connect();
@@ -467,7 +491,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 				String value = AesTool.decrypt(SEED,
 						ToolClass.bytesToHexString(response0));
 				mUserMoneyBase = Double.valueOf(value);
-				mUserMoneyOri = mUserMoneyBase;
+				UserMoneyCur = mUserMoneyOri = mUserMoneyBase;
 				FLog.v("readBalance value="+value);
 				FLog.v("readBalance mUserMoneyBase="+mUserMoneyBase);
 				bCanReadMoney = true;
@@ -477,7 +501,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 				}
 				
 				float[] waterPrice = {Float.valueOf(value), 0};
-				mUIHandler.obtainMessage(MSG_SHOW_WATER_PRICE, waterPrice).sendToTarget();
+				mUIHandler.obtainMessage(MSG_SHOW_WATER_PRICE,1,0, waterPrice).sendToTarget();
 				mUIHandler.obtainMessage(MSG_CARD_ON, IS_ADMIN).sendToTarget();
 			}else{
 				IS_ADMIN = mMC.authenticateSectorWithKeyA(1, keyA);
@@ -576,6 +600,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 				if(instr.length() == 32) {
 					testdata = ToolClass.hexStringToBytes(instr);
 					mMC.writeBlock(28, testdata);
+					UserMoneyCur = setMoney;
 					FLog.v("set Money charge done !!! " +ienstr);
 					ret = true;
 //					readMoney();
@@ -682,6 +707,9 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		case PAY:
 			newFragment = PayFragment.newInstance();
 			break;
+		case REGIST:
+			newFragment = RegistFragment.newInstance();
+			break;
 		default:
 			break;
 		}
@@ -742,7 +770,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	Handler mUIHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			FLog.m("mUIHandler msg "+msg.what);
-			FLog.t("count "+getFragmentManager().getBackStackEntryCount());
+			FLog.m("getBackStackEntryCount "+getFragmentManager().getBackStackEntryCount());
 			switch (msg.what) {
 			case MSG_CHANGE_FRAGMENT:
 				translateFragment((ViewFragment) msg.obj);
@@ -773,8 +801,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 				break;
 			case MainActivity.MSG_CARD_OFF:
 				if(mCurViewFragment != ViewFragment.USER){
-					getFragmentManager().popBackStack();
-//					translateFragment(ViewFragment.USER);
+					popAll();
 				}else{
 					mCurBaseFragment.resetView();
 				}
@@ -786,6 +813,11 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 		};
 	};
 
+	private void popAll(){
+		for(int i=0; i<getFragmentManager().getBackStackEntryCount(); i++){
+			getFragmentManager().popBackStack();
+		}
+	}
 	@Override
 	public void sendMsg(Message msg) {
 		mUIHandler.sendMessageDelayed(msg, 10);

@@ -3,8 +3,8 @@ package com.chuangda.common;
 import com.chuangda.MainActivity;
 
 public class WaterMgr {
-	public static final int WATER_LEVEL_3 = 300;
-	public static final int WATER_LEVEL_5 = 500;
+	public static final int WATER_LEVEL_3 = 3000;
+	public static final int WATER_LEVEL_5 = 5000;
 	public static final int WATER_LEVEL_0 = 0;
 	
 	private static boolean WATER_TIMER = false;
@@ -63,8 +63,7 @@ public class WaterMgr {
 			mWaterLeft = mWaterLevel - waterUsed;
 			FLog.v(TAG,"checkWater "+mWaterLevel+" -- "+mWaterLeft);
 			if(mWaterLeft < 0){
-				MainActivity.gUIHandler.obtainMessage(
-						MainActivity.MSG_SHOW_TOAST,"checkWater stop "+mWaterLevel).sendToTarget();
+//				MainActivity.showToast("checkWater stop "+mWaterLevel);
 				stop();
 				init();
 			}

@@ -17,7 +17,7 @@ public class FFile {
 		String path = FFilePath.getStoragePath();
 		path += "cdhkrecord";
 		String fileName = FTime.getTimeString("yyyy-MM")+".txt";
-		String mark = FTime.getTimeString("dd-HH:mm:ss")+" d="+FUser.deviceno+" n="+FUser.cardno+" a="+FUser.amount+" ->";
+		String mark = FTime.getTimeString("dd-HH:mm:ss")+" d="+FUser.getDeviceNum()+" n="+FUser.cardno+" a="+FUser.amount+" ->";
 		stock = mark+stock+"\n";
 		try {
 			FFile.writeToFile(stock.getBytes(), path, fileName, true);

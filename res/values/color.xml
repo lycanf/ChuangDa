@@ -3,4 +3,7 @@
     <color name="main_item_text_color">#ffff00</color>
     <color name="main_item_text_shadow_color">#FFC0CB</color>
     
+    <color name="pay_item_fixed_money">#00AAEE</color>
+     <color name="pay_item_msg">#FD6318</color>
+    
 </resources>
