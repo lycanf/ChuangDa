@@ -1,4 +1,4 @@
-package com.chuangda;
+/*package com.chuangda;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.chuangda.common.DataNative;
 import com.chuangda.common.FCmd;
@@ -19,13 +18,14 @@ import com.chuangda.common.FData;
 import com.chuangda.common.FLog;
 import com.chuangda.common.FTime;
 import com.chuangda.data.FUser;
+import com.chuangda.widgets.FItemWidget;
+import com.chuangda.widgets.FLinearLayout;
 import com.chuangda.widgets.MODBUS_ITEM;
-import com.chuangda.widgets.customed.FMaintainView;
 
 
 
 
-public class DeviceInfoFragment extends BaseFragment {
+public class CopyOfDeviceInfoFragment extends BaseFragment {
 
 	public static final int MSG_INFO = 4000;
 	
@@ -42,38 +42,7 @@ public class DeviceInfoFragment extends BaseFragment {
 	public final int T_MaintainUDF = 112;
 	public final int T_MaintainRot = 113;
 	
-	class Item{
-		FMaintainView maintain = null;
-		TextView text = null;
-		String type = "";
-		int res ;
-		public Item(int r, String t){
-			res = r;
-			type = t;
-		}
-		public void selected(boolean b){
-			if(null != maintain){
-				maintain.setSelected(b);
-			}else if(null != text){
-				text.setTextColor(b ? Color.RED : Color.WHITE);
-			}
-		}
-	}
-	
-	Item[] mItems = {
-		new Item (R.id.device_info_maintain_ppf,"PPF"),
-		new Item (R.id.device_info_maintain_cto,"CTO"),
-		new Item (R.id.device_info_maintain_udf,"UDF"),
-		new Item (R.id.device_info_maintain_ro,"RO"),
-		new Item (R.id.device_info_volume,"volume"),
-		new Item (R.id.device_info_num,"device num"),
-	};
-	
-	TextView mTextWaterQuality = null;
-	TextView mTextFlow = null;
-	TextView mTextVoltage = null;
-	TextView mTextPulse = null;
-/*	FItemWidget[] mItems = {
+	FItemWidget[] mItems = {
 		new FItemWidget("当前水质 : ",false, T_Quality),
 		new FItemWidget("累积流量 : ",false, T_TotalFlow),
 		new FItemWidget("供电电压 : ",false, T_Voltage),
@@ -87,21 +56,21 @@ public class DeviceInfoFragment extends BaseFragment {
 		
 		new FItemWidget("调整音量 : ",true, T_Volume),	
 		new FItemWidget("设备编号 : ",true, T_Dev_Num),	
-	};*/
+	};
 	
 	boolean isVisible = true;
-	int mCurSelected = -1;
+	int mCurSelected = 0;
 	int mCurUpdate = -1;
 	AudioManager mAudioManager ;
-//	FLinearLayout mlist = null;
+	FLinearLayout mlist = null;
 	ImageView mImgArrow = null;
 	
 	
-	public DeviceInfoFragment() {
+	public CopyOfDeviceInfoFragment() {
 	}
 	
-    static DeviceInfoFragment newInstance() {
-    	DeviceInfoFragment f = new DeviceInfoFragment();
+    static CopyOfDeviceInfoFragment newInstance() {
+    	CopyOfDeviceInfoFragment f = new CopyOfDeviceInfoFragment();
         return f;
     }
 
@@ -115,21 +84,10 @@ public class DeviceInfoFragment extends BaseFragment {
             Bundle savedInstanceState) {
     	View v = inflater.inflate(R.layout.setting_device_info, container, false);
     	mAudioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-    	mImgArrow = (ImageView) v.findViewById(R.id.device_info_arrow);
     	
-    	mTextWaterQuality = (TextView) v.findViewById(R.id.device_info_text_water);
-    	mTextFlow = (TextView) v.findViewById(R.id.device_info_text_flow);
-    	mTextVoltage = (TextView) v.findViewById(R.id.device_info_text_voltage);
-    	mTextPulse = (TextView) v.findViewById(R.id.device_info_text_pulse);
-    	for(int i=0; i<4; i++){
-			mItems[i].maintain = (FMaintainView) v.findViewById(mItems[i].res);
-			if(i != 0){
-				mItems[i].maintain.showTextChange(false);
-			}
-		}
-    	for(int i=4; i<6; i++){
-			mItems[i].text = (TextView) v.findViewById(mItems[i].res);
-		}
+    	mImgArrow = (ImageView) v.findViewById(R.id.device_info_arrow);
+    	mlist = (FLinearLayout) v.findViewById(R.id.device_info_list);
+    	mlist.init(mItems,360,60,40,10);
         return v;
     }
 
@@ -149,21 +107,13 @@ public class DeviceInfoFragment extends BaseFragment {
     }
     
     private void updateInfo(){
-    	mTextWaterQuality.setText("当前水质 : "+MODBUS_ITEM.TDS_OUT);
-    	mTextFlow.setText("当前流量 : "+MODBUS_ITEM.FLOW);
-    	mTextVoltage.setText("供电电压 : "+MODBUS_ITEM.VOLTAGE);
-    	mTextPulse.setText("当前脉冲 : "+MODBUS_ITEM.PULSE);
-    	
-    	mItems[4].text.setText("调整音量 : "+mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-    	mItems[5].text.setText("设备编号 : "+String.format("%05d", DataNative.getDeviceNum()));
-    	
-    	/*mlist.setText(T_Quality, "当前水质 : "+MODBUS_ITEM.TDS_OUT);
+    	mlist.setText(T_Quality, "当前水质 : "+MODBUS_ITEM.TDS_OUT);
     	mlist.setText(T_TotalFlow, "当前流量 : "+MODBUS_ITEM.FLOW);
     	mlist.setText(T_Voltage, "供电电压 : "+MODBUS_ITEM.VOLTAGE);
     	mlist.setText(T_TotalPulse, "当前水质 : "+MODBUS_ITEM.TDS_OUT);
     	mlist.setText(T_Pulse_L, "当前脉冲 : "+MODBUS_ITEM.PULSE);
     	mlist.setText(T_Volume, "调整音量 : "+mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-    	mlist.setText(T_Dev_Num,  "设备编号 : "+String.format("%05d", DataNative.getDeviceNum()));*/
+    	mlist.setText(T_Dev_Num,  "设备编号 : "+String.format("%05d", DataNative.getDeviceNum()));
     }
     
     
@@ -174,18 +124,15 @@ public class DeviceInfoFragment extends BaseFragment {
 		for(int i=0; i < mItems.length; i++){
 			if(i == position){
 				mCurSelected = position;
-				mItems[i].selected(true);
+				mItems[i].text.setBackgroundColor(FData.COLOR_FOCUSED);
+				mlist.getItems().get(mCurSelected).text.requestFocus();
 			}else{
-				mItems[i].selected(false);
+				mItems[i].text.setBackgroundColor(FData.COLOR_UNFOCUSED);
 			}
 		}
 	}
 	
 	private void focusNext(boolean goToNext){
-		if(mCurSelected < 0){
-			setBtnSelected(0);
-			return;
-		}
 		if(mCurSelected < (mItems.length-1) && goToNext){
 			setBtnSelected(mCurSelected + 1);
 		}else if(mCurSelected > 0 && !goToNext){
@@ -196,33 +143,44 @@ public class DeviceInfoFragment extends BaseFragment {
 	}
 	
 	private void clickButton(){
-		FLog.v("clickButton = " + mCurSelected);
-		int left = -1;
-		int top = -1;
-		
-		switch (mCurSelected) {
-		case 4:
-			left = mItems[mCurSelected].text.getRight()+20;
-			top  = mItems[mCurSelected].text.getTop();
-			break;
-		case 5:
-			left = mItems[mCurSelected].text.getRight()+20;
-			top  = mItems[mCurSelected].text.getTop();
-			break;
-		}
-		
-		if(left >= 0){
+		FLog.v("clickButton = "+mCurSelected);
+		if(mlist.getItems().get(mCurSelected).isClickable()){
+			int left = mlist.getLeft()-60;
+			int top  = mlist.getTop() + mlist.getItems().get(mCurSelected).text.getTop();
 			mImgArrow.setVisibility(View.VISIBLE);
-			RelativeLayout.LayoutParams pm = new RelativeLayout.LayoutParams(60, 60);
+			RelativeLayout.LayoutParams pm = new RelativeLayout.LayoutParams(60,60);
 			pm.topMargin = top;
 			pm.leftMargin = left;
 			mImgArrow.setLayoutParams(pm);
 			mCurUpdate = mCurSelected;
+			
+			int type = mlist.getItems().get(mCurSelected).type;
+			switch (type) {
+			case T_MaintainPPF:
+				DataNative.setMaintainPPF(FTime.getTimeString("yyyy-MM-dd HH:mm:ss"));
+				sendDeviceMaintain();
+				break;
+			case T_MaintainCTO:
+				DataNative.setMaintainCTO(FTime.getTimeString("yyyy-MM-dd HH:mm:ss"));
+				sendDeviceMaintain();
+				break;
+			case T_MaintainUDF:
+				DataNative.setMaintainUDF(FTime.getTimeString("yyyy-MM-dd HH:mm:ss"));
+				sendDeviceMaintain();
+				break;
+			case T_MaintainRot:
+				DataNative.setMaintainRO(FTime.getTimeString("yyyy-MM-dd HH:mm:ss"));
+				sendDeviceMaintain();
+				break;
+			default:
+				break;
+			}
+			updateMaintain();
 		}else{
 			mImgArrow.setVisibility(View.INVISIBLE);
 			mCurUpdate = -1;
 		}
-		
+
 	}
 	
 	private void sendDeviceMaintain(){
@@ -240,32 +198,28 @@ public class DeviceInfoFragment extends BaseFragment {
 	}
 	
 	private void updateInfo(boolean bNext){
-		switch (mCurSelected) {
-		case 4:
-			int tempVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-			tempVolume += bNext ? 1 : -1;
-			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, tempVolume , 0);
-			break;
-		case 5:
+		int type = mlist.getItems().get(mCurSelected).type;
+		if(type == T_Dev_Num){
 			int num = DataNative.getDeviceNum();
 			num += bNext ? 1 : -1;
 			if(num < 0){
 				num = 0;
 			}
 			DataNative.setDeviceNum(num);
-			break;
+		}
+		if(type == T_Volume){
+			int tempVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+			tempVolume += bNext ? 1 : -1;
+			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, tempVolume , 0);
 		}
 		updateInfo();
 	}
 	
 	private void updateMaintain(){
-    	/*mlist.setText(T_MaintainRot,"RO :"+DataNative.getMaintainRO());
+    	mlist.setText(T_MaintainRot,"RO :"+DataNative.getMaintainRO());
     	mlist.setText(T_MaintainPPF,"PPF:"+DataNative.getMaintainPPF());
     	mlist.setText(T_MaintainCTO,"CTO:"+DataNative.getMaintainCTO());
-    	mlist.setText(T_MaintainUDF,"UDF:"+DataNative.getMaintainUDF());*/
-		for(int i=0; i<4; i++){
-			mItems[i].maintain.setTextType(mItems[i].type);
-		}
+    	mlist.setText(T_MaintainUDF,"UDF:"+DataNative.getMaintainUDF());
 	}
     @Override
     public void onPause() {
@@ -275,11 +229,10 @@ public class DeviceInfoFragment extends BaseFragment {
     @Override
     public void onResume() {
     	super.onResume();
-    	mCurSelected = -1;
     	isVisible = true;
     	updateInfo();
-    	
     	updateMaintain();
+    	setBtnSelected(0);
     	new updateInfo().start();
     }
     
@@ -363,3 +316,4 @@ public class DeviceInfoFragment extends BaseFragment {
 		
 	}
 }
+*/

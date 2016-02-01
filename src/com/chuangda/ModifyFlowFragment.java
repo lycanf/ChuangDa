@@ -1,5 +1,8 @@
 package com.chuangda;
 
+import android.content.res.AssetManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.KeyEvent;
@@ -41,7 +44,10 @@ public class ModifyFlowFragment extends BaseFragment {
             Bundle savedInstanceState) {
     	View v = inflater.inflate(R.layout.modify_flow, container, false);
     	mFlowData = (TextView) v.findViewById(R.id.flow_data);
-    	
+    	AssetManager assets = getActivity().getAssets();
+		final Typeface font = Typeface.createFromAsset(assets, "fonts/digital-7.ttf");
+		mFlowData.setTypeface(font);
+		mFlowData.setTextColor(Color.rgb(234, 191, 25));
         return v;
     }
 

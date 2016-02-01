@@ -2,7 +2,9 @@ package com.chuangda;
 
 import java.text.DecimalFormat;
 
+import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.KeyEvent;
@@ -36,6 +38,10 @@ public class WaterPriceFragment extends BaseFragment {
             Bundle savedInstanceState) {
     	View v = inflater.inflate(R.layout.water_price, container, false);
     	mWaterPrice = (TextView) v.findViewById(R.id.text_water_price);
+    	AssetManager assets = getActivity().getAssets();
+		final Typeface font = Typeface.createFromAsset(assets, "fonts/digital-7.ttf");
+		mWaterPrice.setTypeface(font);
+		mWaterPrice.setTextColor(Color.rgb(234, 191, 25));
         return v;
     }
 

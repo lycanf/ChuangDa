@@ -1,5 +1,7 @@
 package com.chuangda;
 
+import android.R.color;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.KeyEvent;
@@ -8,13 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.chuangda.common.FData;
 
 public class ChangePasswordFragment extends BaseFragment {
 
 	
-	private Button[] mButtons = new Button[2];
+	private LinearLayout[] mButtons = new LinearLayout[2];
 	
 	public ChangePasswordFragment() {
 	}
@@ -33,8 +36,8 @@ public class ChangePasswordFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
     	View v = inflater.inflate(R.layout.change_passwd, container, false);
-    	mButtons[0] = (Button) v.findViewById(R.id.change_passwd_no);
-    	mButtons[1] = (Button) v.findViewById(R.id.change_passwd_yes);
+    	mButtons[0] = (LinearLayout) v.findViewById(R.id.change_passwd_yes);
+    	mButtons[1] = (LinearLayout) v.findViewById(R.id.change_passwd_no);
     	for(int i=0; i<mButtons.length; i++){
     		mButtons[i].setTag(i);
     		mButtons[i].setOnClickListener(mOnClickListener);
@@ -46,7 +49,7 @@ public class ChangePasswordFragment extends BaseFragment {
     public void onResume() {
     	// TODO Auto-generated method stub
     	super.onResume();
-    	setBtnSelected(0);
+    	setBtnSelected(1);
     }
     
     private void updatePasswd(){
@@ -89,20 +92,20 @@ public class ChangePasswordFragment extends BaseFragment {
 		mCurSelected = 0;
 		for(int i=0; i < mButtons.length; i++){
 			if(i == position){
-				mButtons[i].setBackgroundColor(FData.COLOR_FOCUSED);
+				mButtons[i].setBackgroundColor(Color.RED);
 				mCurSelected = position;
 			}else{
-				mButtons[i].setBackgroundColor(FData.COLOR_UNFOCUSED);
+				mButtons[i].setBackgroundColor(Color.WHITE);
 			}
 		}
 	}
 	
 	private void clickButton(){
-		if(mCurSelected == 0){
+		if(mCurSelected == 1){
 			goBack();
 		}
 		
-		if(mCurSelected == 1){
+		if(mCurSelected == 0){
 			updatePasswd();
 		}
 	}

@@ -3,19 +3,19 @@ package com.chuangda;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.chuangda.MainActivity.ViewFragment;
 import com.chuangda.common.FData;
@@ -57,7 +57,9 @@ public class SettingViewFragment extends BaseFragment {
     	View v = inflater.inflate(R.layout.setting_view, container, false);
     	mListView =  (ListView) v.findViewById(R.id.setting_list);
     	mListView.setDivider(null);
+    	mListView.setDividerHeight(22);
     	mListView.setAdapter(myAdapter);
+//    	mListView.setBackgroundColor(Color.YELLOW);
         return v;
     }
 
@@ -79,12 +81,14 @@ public class SettingViewFragment extends BaseFragment {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			RelativeLayout layout = new RelativeLayout(mContext);
 			RelativeLayout.LayoutParams pm = new RelativeLayout.LayoutParams(
-					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-			pm.topMargin = 4;
+					318, 62);
+//			pm.topMargin = 4;
+			pm.addRule(RelativeLayout.CENTER_IN_PARENT);
 			
-			Button view = new Button(mContext);
+			TextView view = new TextView(mContext);
 			view.setText(getItemString(position));
 			view.setTextSize(ITEM_TEXT_SIZE);
+			view.setTextColor(Color.BLACK);
 			view.setGravity(Gravity.CENTER);
 			view.setTag(position);
 			view.setOnClickListener(mOnClickListener);
@@ -142,10 +146,10 @@ public class SettingViewFragment extends BaseFragment {
 				continue;
 			}
 			if(i == position){
-				SettingItems[i].btn.setBackgroundColor(FData.COLOR_FOCUSED);
+				SettingItems[i].btn.setBackgroundResource(R.drawable.setting_selected);
 				mCurSelected = position;
 			}else{
-				SettingItems[i].btn.setBackgroundColor(FData.COLOR_UNFOCUSED);
+				SettingItems[i].btn.setBackgroundResource(R.drawable.setting_unselected);
 			}
 		}
 	}
@@ -153,7 +157,7 @@ public class SettingViewFragment extends BaseFragment {
 	class SettingItem{
 		public int text;
 		public ViewFragment fragment;
-		public Button btn = null;
+		public TextView btn = null;
 		public SettingItem(int t, ViewFragment f){
 			text = t;
 			fragment = f;
@@ -188,10 +192,10 @@ public class SettingViewFragment extends BaseFragment {
 		}
 		if(KeyEvent.ACTION_UP == event.getAction()){
 			if(FData.KEYCODE_PRE == event.getKeyCode()){
-				focusNext(false);
+				focusNext(true);
 			}
 			if(FData.KEYCODE_NEXT == event.getKeyCode()){
-				focusNext(true);
+				focusNext(false);
 			}
 			if(FData.KEYCODE_ENTER == event.getKeyCode()){
 				clickButton(mCurSelected);

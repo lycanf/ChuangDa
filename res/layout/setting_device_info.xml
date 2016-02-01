@@ -2,16 +2,79 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff" >
-
-    <com.chuangda.widgets.FLinearLayout
+    android:background="@drawable/bg_device" >
+    
+    <TextView
+        android:id="@+id/device_info_text_water"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:id="@+id/device_info_list"
+        android:layout_marginLeft="86px"
+        android:layout_marginTop="176px"
+        android:textColor="@android:color/white"
+        android:textSize="32px" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/device_info_text_flow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="86px"
+        android:layout_marginTop="266px"
+        android:textColor="@android:color/white"
+        android:textSize="32px" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/device_info_text_voltage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="86px"
+        android:layout_marginTop="350px"
+        android:textColor="@android:color/white"
+        android:textSize="32px" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/device_info_text_pulse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="86px"
+        android:layout_marginTop="438px"
+        android:textColor="@android:color/white"
+        android:textSize="32px" >
+    </TextView>
+    
+    <com.chuangda.widgets.customed.FMaintainView
+        android:id="@+id/device_info_maintain_ppf"
+        android:layout_width="84px"
+        android:layout_height="158px"
         android:layout_marginLeft="60px"
-        android:orientation="vertical" >
-    </com.chuangda.widgets.FLinearLayout>
+        android:layout_marginTop="546px" >
+    </com.chuangda.widgets.customed.FMaintainView>
+    
+    <com.chuangda.widgets.customed.FMaintainView
+        android:id="@+id/device_info_maintain_cto"
+        android:layout_width="84px"
+        android:layout_height="158px"
+        android:layout_marginLeft="154px"
+        android:layout_marginTop="546px" >
+    </com.chuangda.widgets.customed.FMaintainView>
+
+    <com.chuangda.widgets.customed.FMaintainView
+        android:id="@+id/device_info_maintain_udf"
+        android:layout_width="84px"
+        android:layout_height="158px"
+        android:layout_marginLeft="250px"
+        android:layout_marginTop="546px" >
+    </com.chuangda.widgets.customed.FMaintainView>
+
+    <com.chuangda.widgets.customed.FMaintainView
+        android:id="@+id/device_info_maintain_ro"
+        android:layout_width="84px"
+        android:layout_height="158px"
+        android:layout_marginLeft="344px"
+        android:layout_marginTop="546px" >
+    </com.chuangda.widgets.customed.FMaintainView>
     
     <ImageView 
         android:layout_width="wrap_content"
@@ -19,5 +82,32 @@
         android:src="@drawable/ic_launcher"
         android:id="@+id/device_info_arrow"
         android:visibility="invisible"/>
+    
+    <ImageView
+        android:id="@+id/device_info_volume_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60px"
+        android:layout_marginTop="750px"
+        android:background="@drawable/icon_volume" >
+    </ImageView>
 
+    <TextView
+        android:id="@+id/device_info_volume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="128px"
+        android:layout_marginTop="756px"
+        android:textColor="@android:color/white"
+        android:textSize="38px" ></TextView>
+        
+    <TextView
+        android:id="@+id/device_info_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60px"
+        android:layout_marginTop="850px"
+        android:textColor="@android:color/white"
+        android:textSize="38px" >
+    </TextView>
 </RelativeLayout>

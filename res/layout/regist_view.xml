@@ -2,13 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff" >
+    android:background="@drawable/bg_regist" >
 
     <ImageView
         android:id="@+id/regist_qr"
-        android:layout_width="260px"
-        android:layout_height="260px"
-        android:layout_centerInParent="true"
+        android:layout_width="290px"
+        android:layout_height="290px"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="460px"
         android:background="@android:color/background_light" />
     
     <TextView 
@@ -16,9 +17,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/regist_qr"
-        android:textSize="30dp"
-        android:layout_marginBottom="20dp"
+        android:textColor="#0cb1e6"
+        android:background="@drawable/bg_regist_text"
+        android:layout_marginTop="260px"
+        android:gravity="center"
+        android:padding="6px"
+        android:textSize="40dp"
+        android:textStyle="bold"
         android:text="扫二维码注册"
         ></TextView>
 </RelativeLayout>
