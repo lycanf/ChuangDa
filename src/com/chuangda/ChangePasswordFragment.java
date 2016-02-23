@@ -1,23 +1,22 @@
 package com.chuangda;
 
-import android.R.color;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.chuangda.common.FData;
 
 public class ChangePasswordFragment extends BaseFragment {
 
 	
-	private LinearLayout[] mButtons = new LinearLayout[2];
+	private RelativeLayout[] mButtons = new RelativeLayout[2];
 	
 	public ChangePasswordFragment() {
 	}
@@ -36,8 +35,8 @@ public class ChangePasswordFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
     	View v = inflater.inflate(R.layout.change_passwd, container, false);
-    	mButtons[0] = (LinearLayout) v.findViewById(R.id.change_passwd_yes);
-    	mButtons[1] = (LinearLayout) v.findViewById(R.id.change_passwd_no);
+    	mButtons[0] = (RelativeLayout) v.findViewById(R.id.change_passwd_yes);
+    	mButtons[1] = (RelativeLayout) v.findViewById(R.id.change_passwd_no);
     	for(int i=0; i<mButtons.length; i++){
     		mButtons[i].setTag(i);
     		mButtons[i].setOnClickListener(mOnClickListener);
@@ -92,10 +91,10 @@ public class ChangePasswordFragment extends BaseFragment {
 		mCurSelected = 0;
 		for(int i=0; i < mButtons.length; i++){
 			if(i == position){
-				mButtons[i].setBackgroundColor(Color.RED);
+				mButtons[i].setBackgroundResource(R.drawable.bg_modifypw_selected);
 				mCurSelected = position;
 			}else{
-				mButtons[i].setBackgroundColor(Color.WHITE);
+				mButtons[i].setBackgroundResource(R.drawable.bg_modifypw_unselected);
 			}
 		}
 	}

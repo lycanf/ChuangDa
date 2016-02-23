@@ -73,6 +73,8 @@ public class DeviceInfoFragment extends BaseFragment {
 	TextView mTextFlow = null;
 	TextView mTextVoltage = null;
 	TextView mTextPulse = null;
+	TextView mTextMaintain = null;
+	
 /*	FItemWidget[] mItems = {
 		new FItemWidget("当前水质 : ",false, T_Quality),
 		new FItemWidget("累积流量 : ",false, T_TotalFlow),
@@ -121,11 +123,9 @@ public class DeviceInfoFragment extends BaseFragment {
     	mTextFlow = (TextView) v.findViewById(R.id.device_info_text_flow);
     	mTextVoltage = (TextView) v.findViewById(R.id.device_info_text_voltage);
     	mTextPulse = (TextView) v.findViewById(R.id.device_info_text_pulse);
+    	mTextMaintain = (TextView) v.findViewById(R.id.device_info_text_maintain);
     	for(int i=0; i<4; i++){
 			mItems[i].maintain = (FMaintainView) v.findViewById(mItems[i].res);
-			if(i != 0){
-				mItems[i].maintain.showTextChange(false);
-			}
 		}
     	for(int i=4; i<6; i++){
 			mItems[i].text = (TextView) v.findViewById(mItems[i].res);
@@ -154,8 +154,8 @@ public class DeviceInfoFragment extends BaseFragment {
     	mTextVoltage.setText("供电电压 : "+MODBUS_ITEM.VOLTAGE);
     	mTextPulse.setText("当前脉冲 : "+MODBUS_ITEM.PULSE);
     	
-    	mItems[4].text.setText("调整音量 : "+mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-    	mItems[5].text.setText("设备编号 : "+String.format("%05d", DataNative.getDeviceNum()));
+    	mItems[4].text.setText(""+mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+    	mItems[5].text.setText(""+String.format("%05d", DataNative.getDeviceNum()));
     	
     	/*mlist.setText(T_Quality, "当前水质 : "+MODBUS_ITEM.TDS_OUT);
     	mlist.setText(T_TotalFlow, "当前流量 : "+MODBUS_ITEM.FLOW);
@@ -179,9 +179,12 @@ public class DeviceInfoFragment extends BaseFragment {
 				mItems[i].selected(false);
 			}
 		}
+		
 	}
 	
 	private void focusNext(boolean goToNext){
+		mTextMaintain.setText("");
+		
 		if(mCurSelected < 0){
 			setBtnSelected(0);
 			return;
@@ -197,7 +200,7 @@ public class DeviceInfoFragment extends BaseFragment {
 	
 	private void clickButton(){
 		FLog.v("clickButton = " + mCurSelected);
-		int left = -1;
+		/*int left = -1;
 		int top = -1;
 		
 		switch (mCurSelected) {
@@ -221,8 +224,31 @@ public class DeviceInfoFragment extends BaseFragment {
 		}else{
 			mImgArrow.setVisibility(View.INVISIBLE);
 			mCurUpdate = -1;
+		}*/
+		
+		mCurUpdate = -1;
+		if(mCurSelected>=0 && mCurSelected< 4){
+			mTextMaintain.setText(mItems[mCurSelected].type+"更换成功!");
+			switch(mCurSelected){
+			case 0:
+				DataNative.setMaintainPPF(FTime.getTimeString("yyyy-MM-dd HH:mm:ss"));
+				break;
+			case 1:
+				DataNative.setMaintainCTO(FTime.getTimeString("yyyy-MM-dd HH:mm:ss"));
+				break;
+			case 2:
+				DataNative.setMaintainUDF(FTime.getTimeString("yyyy-MM-dd HH:mm:ss"));
+				break;
+			case 3:
+				DataNative.setMaintainRO(FTime.getTimeString("yyyy-MM-dd HH:mm:ss"));
+				break;
+			}
+			sendDeviceMaintain();
 		}
 		
+		if(mCurSelected==4 || mCurSelected==5){
+			mCurUpdate = mCurSelected;
+		}
 	}
 	
 	private void sendDeviceMaintain(){

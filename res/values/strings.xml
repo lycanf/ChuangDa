@@ -19,7 +19,7 @@
     <string name="msg_modify_password">修改密码</string>
     <string name="msg_regist">注册</string>
     <string name="msg_calibrate_flow">校正流量</string>
-    <string name="msg_water_price">水费</string>
+    <string name="msg_water_price">水价</string>
     <string name="msg_device_info">设备信息</string>
     <string name="msg_exit">按停止键退出</string>
     <string name="mainview_cost">1升</string>

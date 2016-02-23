@@ -44,36 +44,52 @@
         android:textSize="32px" >
     </TextView>
     
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="524px" 
+        android:background="@drawable/bg_device_maintain_outline"/>
+    
+    <TextView
+        android:id="@+id/device_info_text_maintain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="698px" 
+        android:text=""
+        android:textSize="30dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ff0000"/>
+    
     <com.chuangda.widgets.customed.FMaintainView
         android:id="@+id/device_info_maintain_ppf"
         android:layout_width="84px"
-        android:layout_height="158px"
+        android:layout_height="136px"
         android:layout_marginLeft="60px"
-        android:layout_marginTop="546px" >
+        android:layout_marginTop="560px" >
     </com.chuangda.widgets.customed.FMaintainView>
     
     <com.chuangda.widgets.customed.FMaintainView
         android:id="@+id/device_info_maintain_cto"
         android:layout_width="84px"
-        android:layout_height="158px"
+        android:layout_height="136px"
         android:layout_marginLeft="154px"
-        android:layout_marginTop="546px" >
+        android:layout_marginTop="560px" >
     </com.chuangda.widgets.customed.FMaintainView>
 
     <com.chuangda.widgets.customed.FMaintainView
         android:id="@+id/device_info_maintain_udf"
         android:layout_width="84px"
-        android:layout_height="158px"
+        android:layout_height="136px"
         android:layout_marginLeft="250px"
-        android:layout_marginTop="546px" >
+        android:layout_marginTop="560px" >
     </com.chuangda.widgets.customed.FMaintainView>
 
     <com.chuangda.widgets.customed.FMaintainView
         android:id="@+id/device_info_maintain_ro"
         android:layout_width="84px"
-        android:layout_height="158px"
+        android:layout_height="136px"
         android:layout_marginLeft="344px"
-        android:layout_marginTop="546px" >
+        android:layout_marginTop="560px" >
     </com.chuangda.widgets.customed.FMaintainView>
     
     <ImageView 
@@ -88,25 +104,44 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="60px"
-        android:layout_marginTop="750px"
+        android:layout_marginTop="780px"
         android:background="@drawable/icon_volume" >
     </ImageView>
 
     <TextView
-        android:id="@+id/device_info_volume"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="128px"
-        android:layout_marginTop="756px"
+        android:layout_marginTop="786px"
+        android:textColor="@android:color/white"
+        android:textSize="38px"
+        android:text="调整音量:" ></TextView>
+        
+    <TextView
+        android:id="@+id/device_info_volume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="300px"
+        android:layout_marginTop="786px"
         android:textColor="@android:color/white"
         android:textSize="38px" ></TextView>
         
     <TextView
-        android:id="@+id/device_info_num"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="60px"
-        android:layout_marginTop="850px"
+        android:layout_marginTop="870px"
+        android:textColor="@android:color/white"
+        android:textSize="38px"
+        android:text="设备编号:" >
+    </TextView>
+    
+    <TextView
+        android:id="@+id/device_info_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="242px"
+        android:layout_marginTop="870px"
         android:textColor="@android:color/white"
         android:textSize="38px" >
     </TextView>

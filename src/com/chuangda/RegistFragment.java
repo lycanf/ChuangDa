@@ -132,7 +132,7 @@ public class RegistFragment extends BaseFragment {
 			try {
 				JSONObject jsonObject = new JSONObject(ret);
 				if(jsonObject.has("result")){
-					if(Integer.valueOf(jsonObject.getString("result")) >= 0){
+					if(Integer.valueOf(jsonObject.getString("result")) == 0){
 						if(jsonObject.has("qr_code")){
 							String url = jsonObject.getString("qr_code");
 							mQrBmp = DataHttp.getHttpBitmap(url);
@@ -146,7 +146,7 @@ public class RegistFragment extends BaseFragment {
 							retResult = "二维码请求失败";
 						}
 					}else{
-						retResult = "扫码请求失败";
+						retResult = "设备已存在";
 					}
 				}
 				if(jsonObject.has("tradeno")){

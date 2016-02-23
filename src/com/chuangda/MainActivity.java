@@ -36,6 +36,7 @@ import com.chuangda.common.SysInfo;
 import com.chuangda.common.ToolClass;
 import com.chuangda.common.WaterMgr;
 import com.chuangda.data.FItemCard;
+import com.chuangda.data.FNetSetting;
 import com.chuangda.data.FUser;
 import com.chuangda.net.DataHttp;
 import com.chuangda.widgets.VideoPlay;
@@ -92,7 +93,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 
 
 	public static long INTERVAL_CHECK_ALL = 1000*60;
-	public static long INTERVAL_RECORD = 1000*60;
+	public static long INTERVAL_RECORD = 1000*6;
 	
 	public static String SEED = "cdhk";
 	public static double envalue_MIN = 0;
@@ -205,7 +206,8 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 				Thread.currentThread();
 				try {
 					mCheckRecordTime = System.currentTimeMillis();
-					FUser.sendDeviceState();
+					String res = FUser.sendDeviceState();
+					FNetSetting.parse(res);
 					Thread.sleep(INTERVAL_RECORD);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -223,6 +225,9 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 			
 //			total = String.format("%.2f", totalFlow);
 			amount = String.format("%.2f", (mUserMoneyBase-UserMoneyCur));
+			if(Math.abs(mUserMoneyBase-UserMoneyCur) <= 0.01 ){
+				return;
+			}
 			balance = String.format("%.2f", UserMoneyCur);
 			if(HandlePortData.isWaterOn()){
 				HandlePortData.WATER_FLOW_TIME += System.currentTimeMillis()-HandlePortData.WATER_FLOW_TIME_ONCE;

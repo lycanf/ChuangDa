@@ -37,21 +37,22 @@ public class FMaintainView extends LinearLayout {
 	private void init(Context context){
 		setOrientation(LinearLayout.VERTICAL);
 		setBackgroundResource(R.drawable.bg_device_maintain);
-		LinearLayout.LayoutParams pm = new LayoutParams(80,30);
+		LinearLayout.LayoutParams pm;
+	/*	pm = new LayoutParams(80,30);
 		mText0 = new TextView(context);
 		mText0.setText("¸ü»»");
 		mText0.setTextColor(Color.WHITE);
 		mText0.setTextSize(26);
 		mText0.setGravity(Gravity.CENTER);
 		pm.topMargin = 16;
-		addView(mText0, pm);
+		addView(mText0, pm);*/
 		//
 		int imgH = 16;
 		int imgW = 56;
 		pm = new LayoutParams(imgW,imgH);
 		mImg2 = new ImageView(context);
 		mImg2.setBackgroundColor(Color.rgb(200, 91, 2));
-		pm.topMargin = 12;
+		pm.topMargin = 24;
 		pm.gravity = Gravity.CENTER_HORIZONTAL;
 		addView(mImg2, pm);
 		//
@@ -80,7 +81,7 @@ public class FMaintainView extends LinearLayout {
 	}
 	
 	public void showTextChange(boolean change){
-		mText0.setVisibility(change ? View.VISIBLE : View.INVISIBLE);
+		mText0.setVisibility(change ? View.VISIBLE : View.GONE);
 	}
 	
 	public void setTextType(String type){

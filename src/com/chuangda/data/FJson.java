@@ -20,14 +20,14 @@ public class FJson {
 	}
 	
 	public String getString(String key){
-		String ret = null;
+		String ret = "";
 		if(canUse){
-			if(jsonObject.has("qr_code")){
+			if(jsonObject.has(key)){
 				try {
-					ret = jsonObject.getString("qr_code");
+					ret = jsonObject.getString(key);
 				} catch (JSONException e) {
 					e.printStackTrace();
-					ret = null;
+					ret = "";
 				}
 			}
 		}

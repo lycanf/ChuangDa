@@ -6,53 +6,53 @@
 
  
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/change_passwd_no"
         android:layout_width="218px"
         android:layout_height="52px"
         android:layout_marginTop="456px"
         android:layout_marginLeft="132px"
-        android:orientation="horizontal" >
+        android:background="@drawable/bg_modifypw_selected" >
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:layout_weight="1"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="56px"
             android:src="@drawable/btn_no"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="124px"
             android:textColor="@android:color/black"
-            android:layout_gravity="center_vertical|right"
-            android:layout_weight="1"
-            android:textSize="40px"
+            android:textSize="34px"
             android:text="@string/NO" />
-    </LinearLayout>
+    </RelativeLayout>
 
-       <LinearLayout
+       <RelativeLayout
         android:id="@+id/change_passwd_yes"
         android:layout_width="218px"
         android:layout_height="52px"
         android:layout_marginTop="538px"
         android:layout_marginLeft="132px"
-        android:orientation="horizontal" >
+        android:background="@drawable/bg_modifypw_unselected" >
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:layout_weight="1"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="56px"
             android:src="@drawable/btn_yes"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="124px"
             android:textColor="@android:color/black"
-            android:layout_gravity="center_vertical|left"
-            android:layout_weight="1"
-            android:textSize="40px"
+            android:textSize="34px"
             android:text="@string/YES" />
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>
