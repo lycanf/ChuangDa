@@ -16,6 +16,11 @@ public class DataNative {
 	public static final String DEVICE_NUM= "DEVICE_NUM";
 	public static final String DEVICE_TOTAL_FLOW = "DEVICE_TOTAL_FLOW";
 	
+	public static final String PARAM_STATEINTERVAL= "PARAM_STATEINTERVAL";
+	public static final String PARAM_MAINTAIN= "PARAM_MAINTAIN";
+	public static final String PARAM_TDS= "PARAM_TDS";
+	public static final String PARAM_VIDEO= "PARAM_VIDEO";
+	
 	public static final String MAINTAIN_RO = "DEVICE_MAINTAIN_RO";
 	public static final String MAINTAIN_PPF = "MAINTAIN_PPF";
 	public static final String MAINTAIN_CTO = "MAINTAIN_CTO";
@@ -126,6 +131,46 @@ public class DataNative {
 	}
 	public static String getMaintainUDF(){
 		String ret = sp.getString(MAINTAIN_UDF, Creat_Time);
+		return ret;
+	}
+	
+	public static void setStateInterval(int interval){
+		SharedPreferences.Editor editor = sp.edit();
+		editor.putInt(PARAM_STATEINTERVAL, interval);
+		editor.commit();
+	}
+	public static int getStateInterval(){
+		int ret = sp.getInt(PARAM_STATEINTERVAL, 3);
+		return ret;
+	}
+	
+	public static void setMaintainInterval(int interval){
+		SharedPreferences.Editor editor = sp.edit();
+		editor.putInt(PARAM_MAINTAIN, interval);
+		editor.commit();
+	}
+	public static int getMaintainInterval(){
+		int ret = sp.getInt(PARAM_MAINTAIN, 3);
+		return ret;
+	}
+	
+	public static void setTdsInterval(int interval){
+		SharedPreferences.Editor editor = sp.edit();
+		editor.putInt(PARAM_TDS, interval);
+		editor.commit();
+	}
+	public static int getTdsInterval(){
+		int ret = sp.getInt(PARAM_TDS, 3);
+		return ret;
+	}
+	
+	public static void setVideoInterval(int interval){
+		SharedPreferences.Editor editor = sp.edit();
+		editor.putInt(PARAM_VIDEO, interval);
+		editor.commit();
+	}
+	public static int getVideoInterval(){
+		int ret = sp.getInt(PARAM_VIDEO, 3);
 		return ret;
 	}
 }

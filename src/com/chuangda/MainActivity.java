@@ -1,5 +1,6 @@
 package com.chuangda;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -9,6 +10,7 @@ import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
@@ -61,6 +63,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	public final static int MSG_MODIFY_FLOW = 9011;
 	public final static int MSG_FORCE_STOP = 9012;
 	public final static int MSG_INIT_VIEW = 9013;
+	public final static int MSG_UPDATE_APK = 9014;
 	
 	public final static String TEXT_NO_VIDEO = "Ã»ÓÐÊÓÆµ";
 	public static Handler gUIHandler = null;
@@ -124,7 +127,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
         getWindow().setAttributes(params);
         
         mTestText = (TextView) findViewById(R.id.main_test_text);
-        mTestText.setVisibility(View.GONE);
+//        mTestText.setVisibility(View.GONE);
         
 		mVideoText = (TextView) findViewById(R.id.main_video_text);
 		mVideoText.setText(TEXT_NO_VIDEO);
@@ -202,13 +205,41 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 	private class Record extends Thread{
 		@Override
 		public void run() {
+			Thread.currentThread();
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+			long interval_state = System.currentTimeMillis();
+			long interval_maintain = interval_state;
+			long interval_tds = interval_state;
+			long interval_video = interval_state;
+			long cur_time = 0;
+			
+			gUIHandler.obtainMessage(MSG_TEST_TEXT, "getStateInterval = "+DataNative.getStateInterval()+"s").sendToTarget();
 			while(true){
-				Thread.currentThread();
 				try {
-					mCheckRecordTime = System.currentTimeMillis();
-					String res = FUser.sendDeviceState();
-					FNetSetting.parse(res);
-					Thread.sleep(INTERVAL_RECORD);
+					cur_time = System.currentTimeMillis();
+					if(cur_time - interval_state > DataNative.getStateInterval()*1000){
+						String res = FUser.sendDeviceState();
+						FNetSetting.parse(res);
+						interval_state = cur_time;
+						//test
+						gUIHandler.obtainMessage(MSG_TEST_TEXT, 
+								FUser.getDeviceState()+"\r\n"+"DeviceState = "
+						+DataNative.getStateInterval()+"s\r\n"+res).sendToTarget();
+					}
+					if(cur_time - interval_maintain > DataNative.getMaintainInterval()*1000){
+						interval_maintain = cur_time;
+						FUser.sendDeviceMaintain();
+					}
+					if(cur_time - interval_tds > DataNative.getTdsInterval()*1000){
+						FCmd.readTDS();
+						interval_tds = cur_time;
+					}
+					if(cur_time - interval_video > DataNative.getVideoInterval()*1000){
+						interval_video = cur_time;
+						FUser.sendVideoList();
+					}
+					
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -811,6 +842,17 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 					mCurBaseFragment.resetView();
 				}
 				mCurBaseFragment.onCardOff();
+				break;
+			case MSG_UPDATE_APK:
+				String[] pathfile = ((String)msg.obj).split(",");
+				if(pathfile != null && pathfile.length==2){
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+		            intent.setDataAndType(
+		                    Uri.fromFile(new File(pathfile[0], pathfile[1])),
+		                    "application/vnd.android.package-archive");
+		            startActivity(intent);
+				}
+				
 				break;
 			default:
 				mCurBaseFragment.handleUI(msg);

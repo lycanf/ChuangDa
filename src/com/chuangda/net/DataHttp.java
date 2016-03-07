@@ -1,8 +1,11 @@
 package com.chuangda.net;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,9 +19,13 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 
+import com.chuangda.MainActivity;
+import com.chuangda.common.FFilePath;
 import com.chuangda.common.FLog;
 
 public class DataHttp {
@@ -238,6 +245,74 @@ public class DataHttp {
             e.printStackTrace();  
         }  
         return bitmap;  
-          
     }  
+    
+    public static  byte[] readInputStream(InputStream inputStream) throws IOException {    
+        byte[] buffer = new byte[1024];    
+        int len = 0;    
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();    
+        while((len = inputStream.read(buffer)) != -1) {    
+            bos.write(buffer, 0, len);    
+        }    
+        bos.close();    
+        return bos.toByteArray();    
+    }    
+    
+    public static String saveFile(String url, String dir){
+    	URL myFileURL;  
+    	String fileName = null ;
+        try{  
+            myFileURL = new URL(url);  
+            //获得连接  
+            HttpURLConnection conn=(HttpURLConnection)myFileURL.openConnection();  
+            //设置超时时间为6000毫秒，conn.setConnectionTiem(0);表示没有时间限制  
+            conn.setConnectTimeout(10000);  
+            //连接设置获得数据流  
+            conn.setDoInput(true);  
+            //不使用缓存  
+            conn.setUseCaches(false);  
+            //这句可有可无，没有影响  
+//            conn.connect();  
+            //得到数据流  
+            InputStream is = conn.getInputStream();  
+            byte[] getData = readInputStream(is);
+            //关闭数据流  
+            String array[] = url.split("/");
+            
+            if(array != null && array.length>0){
+            	fileName = array[array.length-1];
+            }else{
+            	return null;
+            }
+            String savepath = FFilePath.getStoragePath();
+            savepath += dir;
+            File saveDir = new File(savepath);  
+            if(!saveDir.exists()){  
+                if(!saveDir.mkdir()){
+                	return null;
+                }
+            }  
+            String[] filelist = saveDir.list();
+            for(String temp : filelist){
+            	if(fileName.equalsIgnoreCase(temp)){
+            		return null;
+            	}
+            }
+            File file = new File(saveDir+File.separator+fileName);      
+            FileOutputStream fos = new FileOutputStream(file);       
+            fos.write(getData);   
+            if(fos!=null){  
+                fos.close();    
+            }  
+            if(is!=null){  
+            	is.close();  
+            }  
+            return fileName;
+        }catch(Exception e){  
+        	FLog.v(e.getMessage());
+        	FLog.v(e.getCause().toString());
+            e.printStackTrace();  
+        }
+		return fileName;  
+    }
 }

@@ -18,6 +18,7 @@ public class FData {
 	public final static int COLOR_UNFOCUSED = Color.LTGRAY;
 	
 	public final static String VIDEO_PATH = "/mnt/sdcard/cdhkmedia/";
+	public final static String APK_PATH = "/mnt/sdcard/cdhkapk/";
 	
 	public static String device_info = " 1...\r\n 2...\r\n 3...\r\n";
 	public static int    WATER_QUALITY = 1;

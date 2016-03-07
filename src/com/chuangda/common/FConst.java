@@ -29,4 +29,5 @@ public class FConst {
 	public final static byte[] HEAD_SET19 		= {(byte)0x01, (byte)0x06 ,(byte)0x00, (byte)0x13};
 	public final static byte[] HEAD_CLEAR 		= {(byte)0x01, (byte)0x06 ,(byte)0x00 ,(byte)0x00 ,(byte)0x00 ,(byte)0x01};
 
+	
 }

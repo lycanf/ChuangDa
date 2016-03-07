@@ -3,6 +3,7 @@ package com.chuangda.widgets;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -27,6 +28,7 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 	ArrayList<String> mPlayList = null;
 	String mPlayingPath = null;
 	MediaController mMediaController = null;
+	public static List<String> DEL_LIST = new ArrayList<String>();
 	
 	public VideoPlay(Context context) {
 		super(context);
@@ -61,6 +63,17 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 			return ;
 		}
 		mPlayList = new ArrayList<String>();
+		for(String filename : mPlayList){
+			if(DEL_LIST.contains(filename)){
+				mPlayList.remove(filename);
+				File delFile = new File(filename);
+				if(delFile.exists()){
+					delFile.delete();
+				}
+			}
+		}
+		DEL_LIST.clear();
+		
 		if(bAll){
 			String[] fileList = null; 
 			fileList = videoFile.list();

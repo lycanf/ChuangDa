@@ -1,6 +1,7 @@
 package com.chuangda.data;
 
-import com.chuangda.MainActivity;
+import java.io.File;
+
 import com.chuangda.common.DataNative;
 import com.chuangda.common.FData;
 import com.chuangda.common.FFile;
@@ -19,6 +20,7 @@ public class FUser {
 	public static String urlDeviceState = "http://api.cdhkcn.com/Device/State";
 	public static String urlDeviceMaintain = "http://api.cdhkcn.com/Device/Maintain";
 	public static String urlDeviceConsume = "http://api.cdhkcn.com/Device/Consume";
+	public static String urlVideoList = "http://api.cdhkcn.com/Device/Video";
 	
 	public static int DeviceNum = 16001;
 	public static String MAC_ADDR = null;
@@ -133,6 +135,31 @@ public class FUser {
 		ret = DataHttp.sendHttpPost(urlDeviceMaintain, getDeviceMaintain());
 		FLog.v("sendDeviceMaintain ="+ret);
 		FFile.record(ret);
+		return ret;
+	}
+	
+	//DeviceState
+	public static String getVideoList(){
+		String list = "";
+		File dir = new File(FData.VIDEO_PATH);
+		if(dir!=null && dir.isDirectory()){
+			String[] temp = dir.list();
+			for(String f : temp){
+				list += f+"#";
+			}
+		}
+		String ret = "deviceno="+getDeviceNum()
+				+"&timestamp="+FTime.getTimeString("yyyy-MM-dd HH:mm:ss")
+				+"&videolist="+list
+				+"&TestMode="+"1";
+		FLog.v("getDeviceMaintain="+ret);
+		return ret;
+	}
+
+	public static String sendVideoList(){
+		String ret = null;
+		ret = DataHttp.sendHttpPost(urlVideoList, getVideoList());
+		FLog.v("sendVideoList ="+ret);
 		return ret;
 	}
 }
