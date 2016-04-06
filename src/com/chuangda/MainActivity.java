@@ -127,7 +127,7 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
         getWindow().setAttributes(params);
         
         mTestText = (TextView) findViewById(R.id.main_test_text);
-//        mTestText.setVisibility(View.GONE);
+        mTestText.setVisibility(View.GONE);
         
 		mVideoText = (TextView) findViewById(R.id.main_video_text);
 		mVideoText.setText(TEXT_NO_VIDEO);
@@ -805,8 +805,8 @@ public class MainActivity extends SerialPortActivity implements UICallBack{
 
 	Handler mUIHandler = new Handler() {
 		public void handleMessage(Message msg) {
-			FLog.m("mUIHandler msg "+msg.what);
-			FLog.m("getBackStackEntryCount "+getFragmentManager().getBackStackEntryCount());
+			/*FLog.v("mUIHandler msg "+msg.what);
+			FLog.v("getBackStackEntryCount "+getFragmentManager().getBackStackEntryCount());*/
 			switch (msg.what) {
 			case MSG_CHANGE_FRAGMENT:
 				translateFragment((ViewFragment) msg.obj);

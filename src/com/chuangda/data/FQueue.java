@@ -29,7 +29,7 @@ public class FQueue {
 	
 	public void add(FItemQueue item){
 		if(item.tryCmdCount > 1){
-			FLog.t("FQueue clear     "+item.name);
+//			FLog.v("FQueue clear     "+item.name);
 			mQueue.clear();
 		}
 //		FLog.t("FQueue add     "+item.name);
@@ -45,7 +45,7 @@ public class FQueue {
 			while(true){
 				try {
 					FItemQueue item = mQueue.take();
-					FLog.t(item.name+" start "+item.name+" ******** mQueue size="+mQueue.size());
+//					FLog.v(item.name+" start "+item.name+" ******** mQueue size="+mQueue.size());
 					SingleCmdHead = null;
 					if(null != item.cmd){
 						CMD_TIME = item.createTime;
@@ -67,7 +67,7 @@ public class FQueue {
 //								FLog.t("FQueue do command "+item.name);
 								break;
 							}else{
-								FLog.t("FQueue error !!!!!!!!!!!!!!!! "+item.name);
+								FLog.e("FQueue error !!!!!!!!!!!!!!!! "+item.name);
 								if(System.currentTimeMillis() - curTime > 5000){
 									curTime = System.currentTimeMillis();
 									MainActivity.showToast("µ×²ã¶ÁÈ¡³ö´í "+item.name);

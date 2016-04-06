@@ -12,7 +12,7 @@ public class FLog {
 	
 	public static void v(String str){
 		if(!SHOW) return;
-		Log.v(TAG,str);
+//		Log.v(TAG,str);
 	}
 	
 	public static void t(String str){
@@ -22,7 +22,7 @@ public class FLog {
 	
 	public static void m(String str){
 		if(!SHOW) return;
-//		Log.v(TAG_M,str);
+		Log.v(TAG_M,str);
 	}
 	
 	public static void t(byte[] str){

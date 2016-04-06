@@ -114,7 +114,6 @@ public class HandlePortData {
 			for(int i=0; i<mReadCmds.length; i++){
 				CMD_ITEM item = mReadCmds[i];
 				if(isCmd(item.cmd_head)){
-					FLog.t("get cmd "+i);
 					mRecognizeCmd = false;
 					mCmdLine = i;
 					mCurCmdNum = -1;
@@ -188,7 +187,6 @@ public class HandlePortData {
 	private static void parseCmdWaterOn(int vint, byte vbyte){
 		CMD_ITEM item = parseCmd(vbyte);
 		if(item.crcRight){
-			FLog.t("parseCmdWaterOn success ");
 			WATER_ON = true;
 			WATER_FLOW_TIME_ONCE = System.currentTimeMillis();
 		}
@@ -200,7 +198,6 @@ public class HandlePortData {
 	private static void parseCmdWaterOff(int vint, byte vbyte){
 		CMD_ITEM item = parseCmd(vbyte);
 		if(item.crcRight){
-			FLog.t("parseCmdWaterOff success ");
 			WATER_ON = false;
 			WATER_FLOW_TIME += (System.currentTimeMillis() - WATER_FLOW_TIME_ONCE);
 			

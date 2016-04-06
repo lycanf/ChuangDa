@@ -56,12 +56,12 @@ public class FNetSetting {
 			}
 			ret = jobj.getString("setupdate");
 			if(ret.equals(STR_UPDATE)){
-				getUpdateUrl();
+//				getUpdateUrl();
 			}
 			
-			int taskid = jobj.getInt("taskid");
 			//test
-//			sendReply(taskid,0);
+			/*int taskid = jobj.getInt("taskid");
+			sendReply(taskid,0);*/
 		}
 	}
 	
@@ -69,6 +69,7 @@ public class FNetSetting {
 		String res = getPara()+"&result="+result+"&taskid="+taskid;
 		String ret = DataHttp.sendHttpPost(urlSettingSetReply, res);
 		FLog.v("ret="+ret);
+		FLog.m("sendReply ret="+ret);
 	}
 	
 	private static void getSetinteval(){
@@ -93,13 +94,15 @@ public class FNetSetting {
 				DataNative.setVideoInterval(intevalVideo);
 			}
 			
+			int taskid = jobj.getInt("taskid");
+			sendReply(taskid,0);
 		}
 		FLog.v("getSetinteval="+ret);
 	}
 	
 	private static void getVideoList(){
 		String ret = DataHttp.sendHttpPost(urlSettingGetVideoList, getPara());
-		FLog.v("getVideoList="+ret);
+		FLog.m("getVideoList="+ret);
 		FJson jobj = new FJson(ret);
 		int res = jobj.getInt("result");
 		if(res == 0){
@@ -112,6 +115,9 @@ public class FNetSetting {
 			temp = temp.replace("\"", "");
 			String[] list = temp.split(",");
 			SaveVideos.save(list);
+			
+			int tempId = jobj.getInt("taskid");
+			sendReply(tempId,0);
 		}
 	}
 	
@@ -130,9 +136,20 @@ public class FNetSetting {
 				FData.setWaterPrice(unitprice);
 			}
 			int pulse = jobj.getInt("pulse");
-			if(unitprice > 0){
-				FData.setWaterPrice(unitprice);
+			if(pulse > 0){
+				FData.setFlowData(pulse);
 			}
+			int resetpower = jobj.getInt("resetpower");
+			if(resetpower == 1){
+				
+			}
+			int resetwater = jobj.getInt("resetwater");
+			if(resetwater == 1){
+				
+			}
+			
+			int taskid = jobj.getInt("taskid");
+			sendReply(taskid,0);
 		}
 	}
 	
@@ -145,6 +162,9 @@ public class FNetSetting {
 			String url = jobj.getString("updateurl");
 			FLog.v("getUpdateUrl="+url);
 			SaveApk.save(url);
+			
+			int taskid = jobj.getInt("taskid");
+			sendReply(taskid,0);
 		}
 	}
 }

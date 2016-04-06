@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.text.TextUtils;
+
 import com.chuangda.common.FData;
 import com.chuangda.common.FLog;
 import com.chuangda.net.DataHttp;
@@ -24,11 +26,30 @@ public class SaveVideos {
 			@Override
 			public void run() {
 				isSaving = true;
-				List<String> fileList = getDownloadFiles(urls);
+				for(String ss : urls){
+					FLog.m("shold save "+ss);
+				}
+				List<String> delList = new ArrayList<String>();
+				List<String> fileList = getDownloadFiles(urls, delList);
+				String savedVide = null;
 				for(String f : fileList){
-					DataHttp.saveFile(f, "cdhkmedia");
+					if(!TextUtils.isEmpty(f)){
+						savedVide = DataHttp.saveFile(f, "cdhkmedia");
+						FLog.m("have save "+savedVide);
+					}
 				}
 				isSaving = false;
+				
+				if(!TextUtils.isEmpty(savedVide)){
+					VideoPlay.DEL_LIST = delList;
+					for(String ds : delList){
+						FLog.m("should del "+ds);
+					}
+				}else{
+					FLog.m("no del video");
+				}
+				
+				
 			}
 		};
 		thread.start();
@@ -36,12 +57,11 @@ public class SaveVideos {
 		return true;
 	}
 	
-	public static List<String> getDownloadFiles(String[] urls){
+	public static List<String> getDownloadFiles(String[] urls, List<String> delList){
 		File file = new File(FData.VIDEO_PATH);
 		List<String> urlList = new ArrayList<String>();
 		String USED = "used";
 		if(file != null && file.isDirectory() && urls != null && urls.length >0){
-			VideoPlay.DEL_LIST.clear();
 			String[] nativeList = file.list();
 			for(String temp : urls){
 				for(int i=0; i<nativeList.length; i++){
@@ -54,10 +74,13 @@ public class SaveVideos {
 					}
 				}
 			}
+			
+			delList.clear();
 			for(String temp : nativeList){
 				if(!USED.equalsIgnoreCase(temp)){
 					FLog.v("del "+temp);
-					VideoPlay.DEL_LIST.add(temp);
+//					VideoPlay.DEL_LIST.add(temp);
+					delList.add(temp);
 				}
 			}
 		}

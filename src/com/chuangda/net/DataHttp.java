@@ -310,7 +310,6 @@ public class DataHttp {
             return fileName;
         }catch(Exception e){  
         	FLog.v(e.getMessage());
-        	FLog.v(e.getCause().toString());
             e.printStackTrace();  
         }
 		return fileName;  

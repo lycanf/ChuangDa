@@ -126,13 +126,15 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 		int videoCount = getVideoCount();
 		sendVideoCount(videoCount);
 		if(videoCount <= 0){
+			setVideoList(true);
+			MainActivity.gUIHandler.sendEmptyMessageDelayed(MainActivity.MSG_PLAY_NEXT, 1000);
 			return false;
 		}
 		if(TextUtils.isEmpty(mPlayingPath)){
 			mPlayingPath = mPlayList.get(0);
 		}
 		int position = mPlayList.indexOf(mPlayingPath);
-//		FLog.v("playNext position="+position+" now="+mPlayingPath);
+		FLog.m("playNext position="+position+" now="+mPlayingPath);
 		if(position == 0){
 			setVideoList(true);
 		}
@@ -163,6 +165,7 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 //			FLog.v("delFile="+mPlayingPath);
 			if(delFile.exists()){
 				delFile.delete();
+				FLog.m("play error ! what="+what+" del="+mPlayingPath);
 			}
 		}
 		setVideoList(true);

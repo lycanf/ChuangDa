@@ -80,7 +80,7 @@ public class DataNative {
 	private static int device_num = -1;
 	public static int getDeviceNum(){
 		if(device_num < 0){
-			device_num = sp.getInt(DEVICE_NUM, 1);
+			device_num = sp.getInt(DEVICE_NUM, 7);
 		}
 		return device_num;
 	}
