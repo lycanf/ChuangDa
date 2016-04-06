@@ -40,13 +40,9 @@ public class SaveVideos {
 				}
 				isSaving = false;
 				
-				if(!TextUtils.isEmpty(savedVide)){
-					VideoPlay.DEL_LIST = delList;
-					for(String ds : delList){
-						FLog.m("should del "+ds);
-					}
-				}else{
-					FLog.m("no del video");
+				VideoPlay.DEL_LIST = delList;
+				for(String ds : delList){
+					FLog.m("should del "+ds);
 				}
 				
 				
@@ -64,6 +60,9 @@ public class SaveVideos {
 		if(file != null && file.isDirectory() && urls != null && urls.length >0){
 			String[] nativeList = file.list();
 			for(String temp : urls){
+				if(nativeList.length == 0){
+					urlList.add(temp);
+				}
 				for(int i=0; i<nativeList.length; i++){
 					if(temp.contains(nativeList[i])){
 						nativeList[i] = USED;

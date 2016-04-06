@@ -21,11 +21,12 @@ import android.widget.VideoView;
 import com.chuangda.MainActivity;
 import com.chuangda.common.FData;
 import com.chuangda.common.FLog;
+import com.chuangda.data.FUser;
 
 public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedListener, OnCompletionListener{
 
 	Context mContext = null;
-	ArrayList<String> mPlayList = null;
+	ArrayList<String> mPlayList = new ArrayList<String>();
 	String mPlayingPath = null;
 	MediaController mMediaController = null;
 	public static List<String> DEL_LIST = new ArrayList<String>();
@@ -62,15 +63,30 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 		if(!videoFile.exists() && !videoFile.mkdirs()){
 			return ;
 		}
-		mPlayList = new ArrayList<String>();
 		for(String filename : mPlayList){
-			if(DEL_LIST.contains(filename)){
-				mPlayList.remove(filename);
-				File delFile = new File(filename);
-				if(delFile.exists()){
-					delFile.delete();
+			for(String delName : DEL_LIST){
+				if(filename.contains(delName)){
+					File delFile = new File(filename);
+					if(delFile.exists()){
+						delFile.delete();
+						FLog.m("del video "+filename);
+					}
 				}
 			}
+		}
+
+		for(String delName : DEL_LIST){
+			mPlayList.remove(delName);
+		}
+		if(DEL_LIST != null && DEL_LIST.size()>0){
+			Thread sendList = new Thread(){
+				@Override
+				public void run() {
+					FUser.sendVideoList();
+				}
+			};
+			sendList.start();
+			
 		}
 		DEL_LIST.clear();
 		
@@ -79,7 +95,10 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 			fileList = videoFile.list();
 			for(String s : fileList){
 //				FLog.v("setVideoList="+FData.VIDEO_PATH+s);
-				mPlayList.add(FData.VIDEO_PATH+s);
+				String tempS = FData.VIDEO_PATH+s;
+				if(!mPlayList.contains(tempS)){
+					mPlayList.add(FData.VIDEO_PATH+s);
+				}
 			}
 			if(mPlayList.size() > 0){
 				Collections.sort(mPlayList); 
@@ -88,7 +107,6 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 		}else{
 			
 		}
-		
 	}
 	
 	private void rePlay(){
@@ -135,6 +153,7 @@ public class VideoPlay extends VideoView implements OnErrorListener, OnPreparedL
 		}
 		int position = mPlayList.indexOf(mPlayingPath);
 		FLog.m("playNext position="+position+" now="+mPlayingPath);
+		position = Math.max(position, 0);
 		if(position == 0){
 			setVideoList(true);
 		}

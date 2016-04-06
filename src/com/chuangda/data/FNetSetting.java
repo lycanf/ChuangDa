@@ -16,7 +16,6 @@ public class FNetSetting {
 	private static int MIN_INTERVAL = 3;
 	private static String STR_SUC = "0";
 	private static String STR_UPDATE = "1";
-	private static String urlSettingVideo = "http://api.cdhkcn.com/Device/Video";
 	private static String urlSettingSetReply = "http://api.cdhkcn.com/Device/SetReply";
 	
 	private static String urlSettingGetIntervalPara = "http://api.cdhkcn.com/Device/GetIntervalPara";
